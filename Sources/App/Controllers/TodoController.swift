@@ -2,6 +2,8 @@ import Vapor
 
 /// Controlers basic CRUD operations on `Todo`s.
 final class TodoController {
+
+
     /// Returns a list of all `Todo`s.
     func index(_ req: Request) throws -> Future<[Todo]> {
         return Todo.query(on: req).all()
@@ -13,10 +15,9 @@ final class TodoController {
             return todo.save(on: req)
         }
     }
-
     /// Deletes a parameterized `Todo`.
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
-        return try req.parameter(Todo.self).flatMap(to: Void.self) { todo in
+        return try req.parameters.next(Todo.self).flatMap(to: Void.self) { todo in
             return todo.delete(on: req)
         }.transform(to: .ok)
     }

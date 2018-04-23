@@ -42,6 +42,14 @@ public func configure(
     /// Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: Todo.self, database: .sqlite)
+
     services.register(migrations)
 
+    try configureWebsockets(&services)
+}
+
+func configureWebsockets(_ services: inout Services) throws {
+    let websockets = EngineWebSocketServer.default()
+    try websocketRoutes(websockets)
+    services.register(websockets, as: WebSocketServer.self)
 }
