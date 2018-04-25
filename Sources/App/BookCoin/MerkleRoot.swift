@@ -48,7 +48,7 @@ extension MerkleRoot {
         }
 
         for tx in txns {
-            nodeArray.append(MerkleRoot(hash: tx.tnxHash))
+            nodeArray.append(MerkleRoot(hash: tx.hash))
         }
 
         while nodeArray.count != 1 {

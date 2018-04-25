@@ -8,15 +8,19 @@
 import Foundation
 import Vapor
 
-func websocketRoutes(_ servicer: EngineWebSocketServer) throws {
-
-    servicer.get("echo") { (ws, req) in
-        ws.onText({ (ws, msg) in
-            ws.send(msg)
-        })
+struct PeerMessage: Codable {
+    enum PeerType: String, Codable {
+        case getBlock
+        case createTransaction
+        case createBlock
     }
+    let method: PeerType
+    let param: [String: Data]
+}
 
+func websocketRoutes(_ servicer: EngineWebSocketServer) throws {
     var pingSessions: [WebSocket] = []
+
     servicer.get("ping") { (ws, req) in
         pingSessions.append(ws)
         ws.onText({ (ws, msg) in
@@ -28,44 +32,24 @@ func websocketRoutes(_ servicer: EngineWebSocketServer) throws {
             pingSessions.removeIf{$0.isClosed}
         }
     }
-}
 
-
-
-// Mark: Help
-
-extension WebSocket {
-    public static func broadcast(msg: String, to all: [WebSocket]) {
-        all.forEach { $0.send(msg) }
-    }
-}
-
-
-extension Future where Expectation == String {
-    public func send(to websocket: WebSocket) -> Future<Expectation> {
-        return self.flatMap(to: Expectation.self) { (data) in
-            websocket.send(data)
-            return self
-        }
-    }
-}
-
-extension Future where Expectation == Data {
-    public func send(to websocket: WebSocket) -> Future<Expectation> {
-        return self.flatMap(to: Expectation.self) { (data) in
-            websocket.send(data)
-            return self
-        }
-    }
-}
-
-extension Array {
-    mutating func removeIf(closure: (Element) -> Bool ) {
-        for (index, element) in self.enumerated() {
-            if closure(element) {
-                self.remove(at: index)
+    servicer.get("chain") { (ws, req) in
+        ws.onBinary({ (ws, data) in
+            guard let request = try? JSONDecoder().decode(PeerMessage.self, from: data) else {return}
+            switch request.method {
+            case .getBlock:
+                break
+            case .createTransaction: // 交易创建
+               break
+            case .createBlock:
+                break
             }
-        }
+        })
     }
 }
+
+
+
+
+
 
