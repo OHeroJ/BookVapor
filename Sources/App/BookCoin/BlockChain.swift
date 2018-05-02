@@ -7,7 +7,7 @@
 
 import Foundation
 
-class BlockChain {
+final class BlockChain {
     var chain: [Block]
     var depth: Int
 
@@ -37,8 +37,6 @@ class BlockChain {
     var lastBlock: Block {
         return self.chain.last ?? Block.genesis
     }
-
-    
 }
 
 

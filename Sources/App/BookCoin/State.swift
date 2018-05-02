@@ -8,7 +8,7 @@
 import Foundation
 import Vapor
 
-class PeerState: Hashable {
+final class PeerState: Hashable {
     var hashValue: Int {
         return self.id
     }
@@ -31,7 +31,7 @@ class PeerState: Hashable {
     }
 }
 
-class BlockState {
+final class BlockState {
     var blockchain: BlockChain
     var peers: [PeerState: WebSocket] = [:]
 

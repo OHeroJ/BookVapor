@@ -13,7 +13,7 @@ enum TransactionType: String, Codable {
     case coinbase
 }
 
-class Transaction: Codable {
+final class Transaction: Codable {
     var asset: Data // 资产信息
     var from: Data
     var recipient: Data

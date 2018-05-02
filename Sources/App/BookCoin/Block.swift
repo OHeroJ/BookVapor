@@ -9,7 +9,7 @@ import Foundation
 import Vapor
 
 
-class Block: Content{
+final class Block: Content {
     let prevHash: Data // 上一个区块的 hash
     // 每个区块存放的信息
     var merkRoot: Data
@@ -17,6 +17,7 @@ class Block: Content{
     // 挖矿的工作量证明
     let nonce: Int
     var transactions: [Transaction]
+
 
     var hash: Data {
         return self.encoded.sha256
