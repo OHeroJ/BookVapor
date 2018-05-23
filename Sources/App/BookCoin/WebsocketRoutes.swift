@@ -18,7 +18,7 @@ struct PeerMessage: Codable {
     let param: [String: Data]
 }
 
-func websocketRoutes(_ servicer: EngineWebSocketServer) throws {
+func websocketRoutes(_ servicer: NIOWebSocketServer) throws {
     var pingSessions: [WebSocket] = []
 
     servicer.get("ping") { (ws, req) in
