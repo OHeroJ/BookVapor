@@ -54,15 +54,16 @@ func websocketRoutes(_ servicer: NIOWebSocketServer) throws {
     servicer.get("chat") { (ws, req) in
         var currentRoomId = 0
         var currentUserId = ""
-
         ws.onText({ (ws, message) in
-            let json = (try? JSON(data: message.data(using: .utf8) ?? Data())) ?? .null
-            print(rooms)
+            guard let jsonData = message.data(using: .utf8) else { return }
+            guard let json = try? JSON(data: jsonData) else { return }
+
             let enterCode = Room.EnterCode(code: json["code"].int)
+            let mJson = json["data"]
             switch enterCode {
             case .enter:
-                guard let roomNum = json["data"]["roomNum"].int else {return}
-                guard let userId = json["data"]["userId"].string else {return}
+                guard let roomNum = mJson["roomNum"].int else {return}
+                guard let userId = mJson["userId"].string else {return}
                 var room: Room? = rooms[roomNum]
                 if nil == room {
                     room = Room()
@@ -72,16 +73,16 @@ func websocketRoutes(_ servicer: NIOWebSocketServer) throws {
                 }
                 room?.addUser(userId: userId, ws: ws)
             case .leave:
-                guard let roomNum = json["data"]["roomNum"].int else {return}
-                guard let userId = json["data"]["userId"].string else {return}
+                guard let roomNum = mJson["roomNum"].int else {return}
+                guard let userId = mJson["userId"].string else {return}
                 guard let room: Room = rooms[roomNum] else {return}
                 room.removeUser(userId: userId)
                 if room.count == 0 {
                     rooms[roomNum] = nil
                 }
             case .message:
-                guard let roomNum = json["data"]["roomNum"].int else {return}
-                guard let userId = json["data"]["userId"].string else {return}
+                guard let roomNum = mJson["roomNum"].int else {return}
+                guard let userId = mJson["userId"].string else {return}
 //                guard let message = json["data"]["message"].string else {return}
                 guard let room: Room = rooms[roomNum] else {return}
                 let messge = json.rawString() ?? ""

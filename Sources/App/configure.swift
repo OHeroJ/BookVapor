@@ -1,4 +1,4 @@
-import FluentSQLite
+import FluentMySQL
 import Vapor
 
 /// Called before your application initializes.
@@ -9,32 +9,26 @@ public func configure(
     _ env: inout Environment,
     _ services: inout Services
 ) throws {
-    try services.register(FluentSQLiteProvider())
-
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
-
 
     var middlewares = MiddlewareConfig()
     middlewares.use(ErrorMiddleware.self)
     services.register(middlewares)
 
-    let sqlite: SQLiteDatabase
-    if env.isRelease {
-        sqlite = try SQLiteDatabase(storage: .file(path: Environment.get("SQLITE_PATH")!))
-    } else {
-        sqlite = try SQLiteDatabase(storage: .memory)
-    }
+    try services.register(FluentMySQLProvider())
+    let mysqlConfig = MySQLDatabaseConfig(hostname: "localhost", port: 3306, username: "root", password: "lai12345", database: "learn")
 
     var databases = DatabasesConfig()
-    databases.add(database: sqlite, as: .sqlite)
+    databases.add(database: MySQLDatabase(config: mysqlConfig), as: .mysql)
     services.register(databases)
 
-    let migrations = MigrationConfig()
-
+    var migrations = MigrationConfig()
+    migrations.add(model: User.self, database: .mysql)
+    migrations.add(model: ChatContent.self, database: .mysql)
+    migrations.add(model: Friend.self, database: .mysql)
     services.register(migrations)
-
     try configureWebsockets(&services)
 }
 

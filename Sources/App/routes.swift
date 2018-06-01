@@ -22,4 +22,16 @@ public func routes(_ router: Router) throws {
     let chainController = ChainController()
     router.get("blocks", use: chainController.blocks)
 
+    router.group("chat") { (srouter) in
+
+        srouter.post("login"){ req in
+            return "login"
+        }
+
+        srouter.post("register"){ req  in
+            return "register"
+        }
+    }
+
+
 }
