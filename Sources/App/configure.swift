@@ -12,9 +12,11 @@ public func configure(
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
+    services.register(RequestSecurityMiddleware.self)
+
 
     var middlewares = MiddlewareConfig()
-    middlewares.use(ErrorMiddleware.self)
+    middlewares.use(RequestSecurityMiddleware.self)
     services.register(middlewares)
 
     try services.register(FluentMySQLProvider())

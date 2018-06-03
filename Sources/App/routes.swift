@@ -1,18 +1,19 @@
 import Routing
 import Vapor
 
-struct TestModel: Content {
-    let test: String
-}
 
-/// Register your application's routes here.
-///
-/// [Learn More →](https://docs.vapor.codes/3.0/getting-started/structure/#routesswift)
 public func routes(_ router: Router) throws {
-    // Basic "Hello, world!" example
+
+    router.get("welcome") { req in
+        return "welcome"
+    }
 
     router.get("hello") { req in
-        return "<html>Hello, world!</html>"
+       return "hello"
+    }
+
+    router.post("hello") { req in
+        return "hello"
     }
 
     router.get("console") { req in
@@ -23,7 +24,6 @@ public func routes(_ router: Router) throws {
     router.get("blocks", use: chainController.blocks)
 
     router.group("chat") { (srouter) in
-
         srouter.post("login"){ req in
             return "login"
         }
