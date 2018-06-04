@@ -7,9 +7,13 @@
 
 import Vapor 
 
-final class ChainController {
+final class ChainController: RouteCollection {
 
-    func blocks(_ req: Request) throws -> Future<[Block]> {
+    func boot(router: Router) throws {
+        router.get("blocks", use: blocks)
+    }
+
+    private func blocks(_ req: Request) throws -> Future<[Block]> {
         let promiss = req.eventLoop.newPromise([Block].self)
         promiss.succeed(result: BlockState.shared.blockchain.chain)
         return promiss.futureResult

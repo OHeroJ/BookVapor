@@ -8,42 +8,9 @@ public func routes(_ router: Router) throws {
         return "welcome"
     }
 
-    router.get("hello") { req in
-       return "hello"
-    }
-
-    router.post("hello") { req in
-        return "hello"
-    }
-
-    router.get("console") { req in
-        return "console"
-    }
-
-
-    router.grouped("api")
-        .grouped(ApiErrorMiddleware.self)
-        .group(RequestSecurityMiddleware.self) { (apiRouter) in
-            apiRouter.get("hello") { req in
-                return "hello"
-            }
-    }
-
-
-
+    let apiController = ApiController()
+    try router.register(collection: apiController)
 
     let chainController = ChainController()
-    router.get("blocks", use: chainController.blocks)
-
-    router.group("chat") { (srouter) in
-        srouter.post("login"){ req in
-            return "login"
-        }
-
-        srouter.post("register"){ req  in
-            return "register"
-        }
-    }
-
-
+    try router.register(collection: chainController)
 }
