@@ -32,6 +32,40 @@ final class User: Content {
     }
 }
 
-
 extension User: MySQLModel {}
 extension User: Migration {}
+
+
+
+// MARK:- Public 
+
+/// 对外的数据
+extension User {
+    final class Public: Codable {
+        var id: Int?
+        var name: String
+        var email: String
+        var avator: String?
+        var phone: String?
+
+        init(id: Int?, name: String, email: String, avator: String?, phone: String?) {
+            self.id = id
+            self.name = name
+            self.email = email
+            self.avator = avator
+            self.phone = phone
+        }
+    }
+
+    func convertToPublic() -> Public {
+        return User.Public(id: id, name: name, email: email, avator: avator, phone: phone)
+    }
+}
+
+extension Future where T: User {
+    func convertToPublic() -> Future<User.Public> {
+        return self.map(to: User.Public.self, { user in
+            return user.convertToPublic()
+        })
+    }
+}
