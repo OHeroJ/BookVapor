@@ -20,6 +20,18 @@ public func routes(_ router: Router) throws {
         return "console"
     }
 
+
+    router.grouped("api")
+        .grouped(ApiErrorMiddleware.self)
+        .group(RequestSecurityMiddleware.self) { (apiRouter) in
+            apiRouter.get("hello") { req in
+                return "hello"
+            }
+    }
+
+
+
+
     let chainController = ChainController()
     router.get("blocks", use: chainController.blocks)
 

@@ -13,10 +13,11 @@ public func configure(
     try routes(router)
     services.register(router, as: Router.self)
     services.register(RequestSecurityMiddleware.self)
+    services.register(ApiErrorMiddleware.self)
 
 
-    var middlewares = MiddlewareConfig()
-    middlewares.use(RequestSecurityMiddleware.self)
+    /// 配置全局的 middleware
+    let middlewares = MiddlewareConfig()
     services.register(middlewares)
 
     try services.register(FluentMySQLProvider())
