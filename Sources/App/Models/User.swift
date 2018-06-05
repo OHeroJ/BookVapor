@@ -37,7 +37,7 @@ extension User: Migration {}
 
 
 
-// MARK:- Public 
+// MARK:- Public
 
 /// 对外的数据
 extension User {
