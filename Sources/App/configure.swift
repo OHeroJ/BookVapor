@@ -1,5 +1,6 @@
 import FluentMySQL
 import Vapor
+import Authentication
 
 /// Called before your application initializes.
 ///
@@ -14,7 +15,7 @@ public func configure(
     services.register(router, as: Router.self)
     services.register(RequestSecurityMiddleware.self)
     services.register(ApiErrorMiddleware.self)
-
+    try services.register(AuthenticationProvider())
 
     /// 配置全局的 middleware
     let middlewares = MiddlewareConfig()
@@ -29,6 +30,8 @@ public func configure(
 
     var migrations = MigrationConfig()
     migrations.add(model: User.self, database: .mysql)
+    migrations.add(model: AccessToken.self, database: .mysql)
+    migrations.add(model: RefreshToken.self, database: .mysql)
     migrations.add(model: ChatContent.self, database: .mysql)
     migrations.add(model: Friend.self, database: .mysql)
     services.register(migrations)

@@ -8,6 +8,8 @@ public func routes(_ router: Router) throws {
         return "welcome"
     }
 
+
+
     let apiController = ApiController()
     try router.register(collection: apiController)
 

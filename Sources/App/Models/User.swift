@@ -7,6 +7,7 @@
 
 import Vapor
 import FluentMySQL
+import Authentication
 
 final class User: Content {
     var id: Int?
@@ -69,3 +70,31 @@ extension Future where T: User {
         })
     }
 }
+
+
+//MARK: BasicAuthenticatable
+extension User: BasicAuthenticatable {
+    static var usernameKey: WritableKeyPath<User, String> = \.email
+    static var passwordKey: WritableKeyPath<User, String> = \.password
+}
+
+//MARK: TOkenAuthenticatable
+extension User: TokenAuthenticatable {
+    typealias TokenType = AccessToken
+}
+
+//MARK: Validatable
+extension User: Validatable {
+    static func validations() throws -> Validations<User> {
+        var validations = Validations(User.self)
+        try validations.add(\.email, .email)
+        try validations.add(\.password, .password)
+        return validations
+    }
+}
+
+
+
+
+
+
