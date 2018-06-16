@@ -17,26 +17,26 @@ final class User: Content {
     var email: String
     var avator: String?
     var password: String
-    var createdAt: TimeInterval
-    var updatedAt: TimeInterval?
-    var deletedAt: TimeInterval?
 
-    init(name: String, phone: String?, email: String, avator: String?, password: String, createdAt: TimeInterval, updatedAt: TimeInterval?, deletedAt: TimeInterval?) {
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
+    init(name: String, phone: String?, email: String, avator: String?, password: String) {
         self.name = name
         self.phone = phone
         self.email = email
         self.avator = avator
         self.password = password
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-        self.deletedAt = deletedAt
     }
 }
 
 extension User: MySQLModel {}
 extension User: Migration {}
-
-
 
 // MARK:- Public
 

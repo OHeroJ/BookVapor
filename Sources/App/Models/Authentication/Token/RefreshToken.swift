@@ -16,6 +16,14 @@ struct RefreshToken: Content {
     let token: Token
     let userId: Int
 
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
     init(userId: Int) throws {
         self.token = try CryptoRandom().generateData(count: 32).base64URLEncodedString()
         self.userId = userId

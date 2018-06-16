@@ -14,17 +14,19 @@ final class ChatContent: Content {
     var userId: Int
     var action: Int
     var content: String
-    var createdAt: TimeInterval
-    var updatedAt: TimeInterval?
-    var deletedAt: TimeInterval?
 
-    init(userId: Int, action: Int, content: String, createdAt: TimeInterval, updatedAt: TimeInterval?, deletedAt: TimeInterval?) {
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
+    init(userId: Int, action: Int, content: String) {
         self.userId = userId
         self.action = action
         self.content = content
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-        self.deletedAt = deletedAt
     }
 }
 

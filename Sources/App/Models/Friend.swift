@@ -12,16 +12,18 @@ final class Friend: Content {
     var id: Int?
     var userId: Int
     var friendId: Int
-    var createdAt: TimeInterval
-    var updatedAt: TimeInterval?
-    var deletedAt: TimeInterval?
 
-    init(userId: Int, friendId: Int, createAt: TimeInterval, updatedAt: TimeInterval?, deletedAt: TimeInterval?) {
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
+    init(userId: Int, friendId: Int) {
         self.userId = userId
         self.friendId = friendId
-        self.createdAt = createAt
-        self.updatedAt = updatedAt
-        self.deletedAt = deletedAt
     }
 }
 

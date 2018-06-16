@@ -10,9 +10,11 @@ import Vapor
 struct ErrorResult {
     let message: String
     let status: HTTPStatus?
-    init(message: String, status: HTTPStatus?) {
+    let identifier: String?
+    init(message: String, status: HTTPStatus?, identifer: String? = "-1") {
         self.message = message
         self.status = status
+        self.identifier = identifer
     }
 }
 
@@ -62,10 +64,10 @@ final class ApiErrorMiddleware: Middleware, ServiceType {
         if result == nil {
             switch error {
             case let abort as AbortError:
-                result = ErrorResult(message: abort.reason, status: abort.status)
+                result = ErrorResult(message: abort.reason, status: abort.status, identifer: abort.identifier)
             case let debuggable as Debuggable where !self.environment.isRelease:
                 let reason = debuggable.debuggableHelp(format: .short)
-                result = ErrorResult(message: reason, status: .internalServerError)
+                result = ErrorResult(message: reason, status: .internalServerError, identifer: debuggable.identifier)
             default:
                 #if !os(macOS)
                 if let error = error as? CustomStringConvertible {
@@ -81,7 +83,7 @@ final class ApiErrorMiddleware: Middleware, ServiceType {
 
         let json: Data
         do {
-            json = try JSONEncoder().encode(["message": result.message, "code": "-1"])
+            json = try JSONEncoder().encode(["message": result.message, "code": result.identifier])
         } catch {
             json = Data("{\"message\": \"Unable to encode error to JSON\", \"code\": \"-1\"}".utf8)
         }

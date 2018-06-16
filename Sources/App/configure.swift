@@ -13,7 +13,6 @@ public func configure(
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
-    services.register(RequestSecurityMiddleware.self)
     services.register(ApiErrorMiddleware.self)
     try services.register(AuthenticationProvider())
 

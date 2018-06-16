@@ -21,6 +21,13 @@ struct AccessToken: Content {
     private(set) var userId: Int
     let expiryTime: Date
 
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
     init(userId: Int) throws {
         self.token = try CryptoRandom().generateData(count: 32).base64URLEncodedString()
         self.userId = userId

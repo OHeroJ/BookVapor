@@ -13,7 +13,8 @@ final class UserRouteController: RouteCollection {
     private let authController = AuthenticationController()
 
     func boot(router: Router) throws {
-        let group = router.grouped("api", "users")
+        let group = router.grouped("api", "users").grouped(ApiErrorMiddleware.self)
+        
         group.post(User.self, at: "login", use: loginUserHandler)
         group.post(User.self, at: "register", use: registerUserHandler)
     }
@@ -29,9 +30,8 @@ private extension UserRouteController {
             .first()
             .flatMap { existingUser in
                 guard let existingUser = existingUser else {
-                    throw Abort(.badRequest, reason: "this user does not exist" , identifier: nil)
+                    throw Abort(.badRequest, reason: "this user does not exist" , identifier: "1")
                 }
-
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(user.password, created: existingUser.password) else {
                     throw Abort(.badRequest) /* authentication failure */
@@ -47,7 +47,7 @@ private extension UserRouteController {
             .first()
             .flatMap { existingUser in
                 guard existingUser == nil else {
-                    throw Abort(.badRequest, reason: "a user with this email already exists" , identifier: nil)
+                    throw Abort(.badRequest, reason: "a user with this email already exists" , identifier: "1")
                 }
                 try newUser.validate()
                 return try newUser
@@ -68,10 +68,7 @@ private extension User {
                     phone: phone,
                     email: email,
                     avator: avator,
-                    password: password,
-                    createdAt: createdAt,
-                    updatedAt: updatedAt,
-                    deletedAt: deletedAt)
+                    password: password)
     }
 }
 
