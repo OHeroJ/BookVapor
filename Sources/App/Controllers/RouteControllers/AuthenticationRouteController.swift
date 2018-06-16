@@ -22,7 +22,6 @@ final class AuthenticationRouteController: RouteCollection {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let basicAuthGroup = group.grouped([basicAuthMiddleware, guardAuthMiddleware])
         basicAuthGroup.post(UserEmailContainer.self, at: "revoke", use: accessTokenRevocationhandler)
-
     }
 }
 

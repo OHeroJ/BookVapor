@@ -7,7 +7,7 @@
 
 import Vapor
 
-final class ApiController: RouteCollection {
+final class ApiRouteController: RouteCollection {
     func boot(router: Router) throws {
         router.grouped("api")
             .grouped(ApiErrorMiddleware.self)

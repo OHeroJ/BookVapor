@@ -17,7 +17,6 @@ final class ProtectedRoutesController: RouteCollection {
         let basicAuthGroup = group.grouped([basicAuthMiddleware, guardAuthMiddleware])
         basicAuthGroup.get("basic", use: basicAuthRouteHandler)
 
-
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
         tokenAuthGroup.get("token", use: tokenAuthRouteHandler)
