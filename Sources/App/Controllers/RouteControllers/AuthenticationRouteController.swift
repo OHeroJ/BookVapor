@@ -18,7 +18,7 @@ final class AuthenticationRouteController: RouteCollection {
     private let authController = AuthenticationController()
 
     func boot(router: Router) throws {
-        let group = router.grouped("api", "token").grouped(ApiErrorMiddleware.self)
+        let group = router.grouped("api", "token")
         group.post(RefreshTokenContainer.self, at: "refresh", use: refreshAccessTokenHandler)
 
         let basicAuthMiddleware = User.basicAuthMiddleware(using: BCrypt)
@@ -30,7 +30,7 @@ final class AuthenticationRouteController: RouteCollection {
 
 //MARK: Helper
 extension AuthenticationRouteController {
-    func refreshAccessTokenHandler(_ request: Request, container: RefreshTokenContainer) throws -> Future<AuthenticationContainer> {
+    func refreshAccessTokenHandler(_ request: Request, container: RefreshTokenContainer) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return try authController.authenticationContainer(for: container.refreshToken, on: request)
     }
 

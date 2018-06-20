@@ -10,7 +10,7 @@ import Authentication
 
 final class ProtectedRoutesController: RouteCollection {
     func boot(router: Router) throws {
-        let group = router.grouped("api", "protected").grouped(ApiErrorMiddleware.self)
+        let group = router.grouped("api", "protected")
 
         let basicAuthMiddleware = User.basicAuthMiddleware(using: BCrypt)
         let guardAuthMiddleware = User.guardAuthMiddleware()
@@ -32,12 +32,15 @@ private extension ProtectedRoutesController {
         return try request
             .requireAuthenticated(User.self)
             .convertToPublic()
-            .convertToCustomContainer()
+            .convertToSuccessContainer()
     }
 
     /// 用 token 获取用户信息
-    func tokenAuthRouteHandler(_ request: Request) throws -> User.Public {
-        return try request.requireAuthenticated(User.self).convertToPublic()
+    func tokenAuthRouteHandler(_ request: Request) throws -> JSONContainer<User.Public> {
+        return try request
+            .requireAuthenticated(User.self)
+            .convertToPublic()
+            .convertToSuccessContainer()
     }
 }
 

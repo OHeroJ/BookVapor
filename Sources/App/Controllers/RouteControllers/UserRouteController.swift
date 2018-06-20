@@ -13,7 +13,7 @@ final class UserRouteController: RouteCollection {
     private let authController = AuthenticationController()
 
     func boot(router: Router) throws {
-        let group = router.grouped("api", "users").grouped(ApiErrorMiddleware.self)
+        let group = router.grouped("api", "users")
         
         group.post(UserLoginContainer.self, at: "login", use: loginUserHandler)
         group.post(User.self, at: "register", use: registerUserHandler)
@@ -23,31 +23,31 @@ final class UserRouteController: RouteCollection {
 //MARK: Helper
 private extension UserRouteController {
 
-    func loginUserHandler(_ request: Request, user: UserLoginContainer) throws -> Future<AuthenticationContainer> {
+    func loginUserHandler(_ request: Request, user: UserLoginContainer) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return User
             .query(on: request)
             .filter(\.email == user.email)
             .first()
             .flatMap { existingUser in
                 guard let existingUser = existingUser else {
-                    throw Abort(.badRequest, reason: "this user does not exist" , identifier: "1")
+                    return request.future(JSONContainer<AuthenticationContainer>(code: 1, message: "不存在该用户"))
                 }
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(user.password, created: existingUser.password) else {
-                    throw Abort(.badRequest) /* authentication failure */
+                     return request.future(JSONContainer<AuthenticationContainer>(code: 2, message: "认证失败")) /* authentication failure */
                 }
                 return try self.authController.authenticationContainer(for: existingUser, on: request)
-        }
+            }
     }
 
-    func registerUserHandler(_ request: Request, newUser: User) throws -> Future<AuthenticationContainer> {
+    func registerUserHandler(_ request: Request, newUser: User) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return User
             .query(on: request)
             .filter(\.email == newUser.email)
             .first()
             .flatMap { existingUser in
                 guard existingUser == nil else {
-                    throw Abort(.badRequest, reason: "a user with this email already exists" , identifier: "1")
+                    return request.future(JSONContainer<AuthenticationContainer>(code: 1, message: "该用户已存在"))
                 }
                 try newUser.validate()
                 return try newUser

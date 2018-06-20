@@ -13,10 +13,10 @@ public func configure(
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
-    services.register(ApiErrorMiddleware.self)
     try services.register(AuthenticationProvider())
 
-    let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0", port: 8080)
+    let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0",
+                                               port: 8080)
     services.register(serverConfig)
 
     /// 配置全局的 middleware
@@ -24,10 +24,15 @@ public func configure(
     services.register(middlewares)
 
     try services.register(FluentMySQLProvider())
-    let mysqlConfig = MySQLDatabaseConfig(hostname: "localhost", port: 3306, username: "root", password: "lai12345", database: "learn")
+    let mysqlConfig = MySQLDatabaseConfig(hostname: "localhost",
+                                          port: 3306,
+                                          username: "root",
+                                          password: "lai12345",
+                                          database: "learn")
 
     var databases = DatabasesConfig()
-    databases.add(database: MySQLDatabase(config: mysqlConfig), as: .mysql)
+    databases.add(database: MySQLDatabase(config: mysqlConfig),
+                  as: .mysql)
     services.register(databases)
 
     var migrations = MigrationConfig()

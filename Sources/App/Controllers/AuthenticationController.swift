@@ -15,19 +15,19 @@ import Crypto
 final class AuthenticationController {
 
     //MARK: Actions
-    func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: DatabaseConnectable) throws -> Future<AuthenticationContainer> {
+    func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: DatabaseConnectable) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return try existingUser(matchingTokenString: refreshToken, on: connection).flatMap { user in
             guard let user = user else { throw Abort(.notFound) }
             return try self.authenticationContainer(for: user, on: connection)
         }
     }
 
-    func authenticationContainer(for user: User, on connection: DatabaseConnectable) throws -> Future<AuthenticationContainer> {
+    func authenticationContainer(for user: User, on connection: DatabaseConnectable) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return try removeAllTokens(for: user, on: connection)
             .flatMap { _ in
             return try map(to: AuthenticationContainer.self, self.accessToken(for: user, on: connection), self.refreshToken(for: user, on: connection)) { access, refresh in
                 return AuthenticationContainer(accessToken: access, refreshToken: refresh)
-            }
+            }.convertToCustomContainer()
         }
     }
 

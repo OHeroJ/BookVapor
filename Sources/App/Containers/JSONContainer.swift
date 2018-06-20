@@ -23,6 +23,14 @@ extension Content {
     func convertToCustomContainer(code: Int = 0, messae: String = "ok") -> JSONContainer<Self> {
         return JSONContainer(code: code, message: messae, data: self)
     }
+
+    func convertToErrorContainer(code: Int, message: String) -> JSONContainer<Self> {
+        return self.convertToCustomContainer(code: code, messae: message)
+    }
+
+    func convertToSuccessContainer() -> JSONContainer<Self> {
+        return self.convertToCustomContainer()
+    }
 }
 
 extension Future where T: Content {
