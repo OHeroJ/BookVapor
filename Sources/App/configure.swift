@@ -16,6 +16,9 @@ public func configure(
     services.register(ApiErrorMiddleware.self)
     try services.register(AuthenticationProvider())
 
+    let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0", port: 8080)
+    services.register(serverConfig)
+
     /// 配置全局的 middleware
     let middlewares = MiddlewareConfig()
     services.register(middlewares)

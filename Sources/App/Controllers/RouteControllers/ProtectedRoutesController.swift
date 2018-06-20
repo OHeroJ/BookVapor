@@ -20,18 +20,24 @@ final class ProtectedRoutesController: RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
         tokenAuthGroup.get("token", use: tokenAuthRouteHandler)
+
     }
 }
 
 //MARK: Helper
 private extension ProtectedRoutesController {
 
-    func basicAuthRouteHandler(_ request: Request) throws -> User {
-        return try request.requireAuthenticated(User.self)
+    /// 用 basic 获取用户信息
+    func basicAuthRouteHandler(_ request: Request) throws -> JSONContainer<User.Public> {
+        return try request
+            .requireAuthenticated(User.self)
+            .convertToPublic()
+            .convertToCustomContainer()
     }
 
-    func tokenAuthRouteHandler(_ request: Request) throws -> User {
-        return try request.requireAuthenticated(User.self)
+    /// 用 token 获取用户信息
+    func tokenAuthRouteHandler(_ request: Request) throws -> User.Public {
+        return try request.requireAuthenticated(User.self).convertToPublic()
     }
 }
 

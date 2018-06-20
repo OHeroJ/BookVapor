@@ -42,7 +42,7 @@ extension User: Migration {}
 
 /// 对外的数据
 extension User {
-    final class Public: Codable {
+    final class Public: Content {
         var id: Int?
         var name: String
         var email: String

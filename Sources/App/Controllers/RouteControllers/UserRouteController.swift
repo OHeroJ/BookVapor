@@ -15,7 +15,7 @@ final class UserRouteController: RouteCollection {
     func boot(router: Router) throws {
         let group = router.grouped("api", "users").grouped(ApiErrorMiddleware.self)
         
-        group.post(User.self, at: "login", use: loginUserHandler)
+        group.post(UserLoginContainer.self, at: "login", use: loginUserHandler)
         group.post(User.self, at: "register", use: registerUserHandler)
     }
 }
@@ -23,7 +23,7 @@ final class UserRouteController: RouteCollection {
 //MARK: Helper
 private extension UserRouteController {
 
-    func loginUserHandler(_ request: Request, user: User) throws -> Future<AuthenticationContainer> {
+    func loginUserHandler(_ request: Request, user: UserLoginContainer) throws -> Future<AuthenticationContainer> {
         return User
             .query(on: request)
             .filter(\.email == user.email)
@@ -64,11 +64,11 @@ private extension UserRouteController {
 
 private extension User {
     func user(with digest: BCryptDigest) throws -> User {
-        return User(name: name,
+        return try User(name: name,
                     phone: phone,
                     email: email,
                     avator: avator,
-                    password: password)
+                    password: digest.hash(password))
     }
 }
 

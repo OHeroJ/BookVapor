@@ -8,7 +8,6 @@
 import Vapor 
 
 final class ChainRouteController: RouteCollection {
-
     func boot(router: Router) throws {
         router.get("blocks", use: blocks)
     }
