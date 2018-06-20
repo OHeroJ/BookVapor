@@ -17,6 +17,10 @@ public func routes(_ router: Router) throws {
     let protectedRouteController = ProtectedRoutesController()
     try router.register(collection: protectedRouteController)
 
+    let accountRouteController = AccountRouteController()
+    try router.register(collection: accountRouteController)
+
     let chainController = ChainRouteController()
     try router.register(collection: chainController)
+
 }

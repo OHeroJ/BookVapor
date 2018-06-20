@@ -17,10 +17,10 @@ final class ProtectedRoutesController: RouteCollection {
         let basicAuthGroup = group.grouped([basicAuthMiddleware, guardAuthMiddleware])
         basicAuthGroup.get("basic", use: basicAuthRouteHandler)
 
+        /// App 采用这个
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
         tokenAuthGroup.get("token", use: tokenAuthRouteHandler)
-
     }
 }
 
@@ -30,17 +30,17 @@ private extension ProtectedRoutesController {
     /// 用 basic 获取用户信息
     func basicAuthRouteHandler(_ request: Request) throws -> JSONContainer<User.Public> {
         return try request
-            .requireAuthenticated(User.self)
-            .convertToPublic()
-            .convertToSuccessContainer()
+        .requireAuthenticated(User.self)
+        .convertToPublic()
+        .convertToSuccessContainer()
     }
 
     /// 用 token 获取用户信息
     func tokenAuthRouteHandler(_ request: Request) throws -> JSONContainer<User.Public> {
         return try request
-            .requireAuthenticated(User.self)
-            .convertToPublic()
-            .convertToSuccessContainer()
+                .requireAuthenticated(User.self)
+                .convertToPublic()
+                .convertToSuccessContainer()
     }
 }
 
