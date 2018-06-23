@@ -10,8 +10,8 @@ import FluentMySQL
 
 final class Friend: Content {
     var id: Int?
-    var userId: Int
-    var friendId: Int
+    var userId: User.ID
+    var friendId: User.ID
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -21,7 +21,7 @@ final class Friend: Content {
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
-    init(userId: Int, friendId: Int) {
+    init(userId: User.ID, friendId: User.ID) {
         self.userId = userId
         self.friendId = friendId
     }

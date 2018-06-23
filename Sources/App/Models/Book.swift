@@ -87,7 +87,7 @@ extension Book {
         case check = 0 // 审核状态
         case putaway = 1 // 发布状态
         case soldout = 2 // 下架
-        case deleted = 3 // 删除 
+        case deleted = 3 // 删除
     }
 }
 

@@ -45,7 +45,6 @@ extension User {
 }
 
 // MARK:- Public
-
 /// 对外的数据
 extension User {
     final class Public: Content {

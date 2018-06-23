@@ -18,3 +18,17 @@
         <img src="http://img.shields.io/badge/swift-4.1-brightgreen.svg" alt="Swift 4.1">
     </a>
 </center>
+
+
+## 功能
+
+* 用户注册、登入、密码找回
+* 书籍（发布、收藏、评价）
+* 心愿书单（发布，评论）
+* 用户(关注、留言)
+* 聊天
+* 消息（推送，系统消息）
+
+
+
+
