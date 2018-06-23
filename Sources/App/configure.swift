@@ -33,7 +33,7 @@ public func configure(
     var databases = DatabasesConfig()
     databases.add(database: MySQLDatabase(config: mysqlConfig),
                   as: .mysql)
-    services.register(databases)
+    services.register(mysqlConfig)
 
     var migrations = MigrationConfig()
     migrations.add(model: User.self, database: .mysql)
@@ -41,6 +41,9 @@ public func configure(
     migrations.add(model: RefreshToken.self, database: .mysql)
     migrations.add(model: ChatContent.self, database: .mysql)
     migrations.add(model: Friend.self, database: .mysql)
+    migrations.add(model: PriceUnit.self, database: .mysql)
+    migrations.add(model: BookClassify.self, database: .mysql)
+    migrations.add(model: Book.self, database: .mysql)
     services.register(migrations)
     try configureWebsockets(&services)
 }

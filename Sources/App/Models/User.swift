@@ -38,6 +38,12 @@ final class User: Content {
 extension User: MySQLModel {}
 extension User: Migration {}
 
+extension User {
+    var books: Children<User, Book> { // 1 - 多
+        return children(\.createId)
+    }
+}
+
 // MARK:- Public
 
 /// 对外的数据
