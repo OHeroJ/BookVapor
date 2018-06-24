@@ -1,6 +1,7 @@
 import FluentMySQL
 import Vapor
 import Authentication
+import SendGrid
 
 /// Called before your application initializes.
 ///
@@ -14,6 +15,10 @@ public func configure(
     try routes(router)
     services.register(router, as: Router.self)
     try services.register(AuthenticationProvider())
+
+    let emailConfig = SendGridConfig(apiKey: "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")
+    services.register(emailConfig)
+    try services.register(SendGridProvider())
 
     let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0",
                                                port: 8080)
@@ -44,6 +49,7 @@ public func configure(
     migrations.add(model: PriceUnit.self, database: .mysql)
     migrations.add(model: BookClassify.self, database: .mysql)
     migrations.add(model: Book.self, database: .mysql)
+    migrations.add(model: ActiveCode.self, database: .mysql)
     services.register(migrations)
     try configureWebsockets(&services)
 }

@@ -101,6 +101,15 @@
         }
       },
       {
+        "package": "SendGrid",
+        "repositoryURL": "https://github.com/vapor-community/sendgrid-provider.git",
+        "state": {
+          "branch": null,
+          "revision": "3b71cae7ed953a128a7bb0381b80b31bc7f1d8e5",
+          "version": "3.0.5"
+        }
+      },
+      {
         "package": "Service",
         "repositoryURL": "https://github.com/vapor/service.git",
         "state": {

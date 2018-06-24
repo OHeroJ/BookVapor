@@ -10,7 +10,7 @@ import Fluent
 import FluentMySQL
 import Crypto
 
-
+import SendGrid
 
 final class AuthenticationController {
 
@@ -25,7 +25,9 @@ final class AuthenticationController {
     func authenticationContainer(for user: User, on connection: DatabaseConnectable) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return try removeAllTokens(for: user, on: connection)
             .flatMap { _ in
-            return try map(to: AuthenticationContainer.self, self.accessToken(for: user, on: connection), self.refreshToken(for: user, on: connection)) { access, refresh in
+            return try map(to: AuthenticationContainer.self,
+                           self.accessToken(for: user, on: connection),
+                           self.refreshToken(for: user, on: connection)) { access, refresh in
                 return AuthenticationContainer(accessToken: access, refreshToken: refresh)
             }.convertToCustomContainer()
         }

@@ -8,6 +8,13 @@ public func routes(_ router: Router) throws {
         return "welcome"
     }
 
+    router.get("scheme") { request in
+        return request
+            .http
+            .headers
+            .firstValue(name: HTTPHeaderName.host) ?? ""
+    }
+
     let authRouteController = AuthenticationRouteController()
     try router.register(collection: authRouteController)
 
