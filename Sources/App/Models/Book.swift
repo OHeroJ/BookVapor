@@ -80,6 +80,11 @@ extension Book {
     var unit:Parent<Book, PriceUnit> {
         return parent(\.priceUintId)
     }
+
+    var collectors: Siblings<Book, User, Collect> { // 收藏者
+        return siblings()
+    }
+
 }
 
 extension Book {
@@ -103,6 +108,7 @@ extension Book: Migration {
 //        }
 //    }
 }
+
 
 
 

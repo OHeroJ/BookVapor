@@ -39,9 +39,18 @@ extension User: MySQLModel {}
 extension User: Migration {}
 
 extension User {
-    var books: Children<User, Book> { // 1 - 多
+    var books: Children<User, Book> { // 发布的书
         return children(\.createId)
     }
+
+    var codes: Children<User, ActiveCode> {
+        return children(\.userId)
+    }
+
+    var collectBooks: Siblings<User, Book, Collect> { // 收藏的书
+        return siblings()
+    }
+
 }
 
 // MARK:- Public

@@ -18,8 +18,9 @@ final class UserRouteController: RouteCollection {
         
         group.post(UserLoginContainer.self, at: "login", use: loginUserHandler)
         group.post(User.self, at: "register", use: registerUserHandler)
-//        group.post("newPassword", use: <#T##(Request) throws -> ResponseEncodable#>)
 
+        /// 修改密码 
+        group.post(NewsPasswordContainer.self, at:"newPassword", use: newPassword)
     }
 }
 
@@ -42,7 +43,32 @@ private extension UserRouteController {
             }
     }
 
-
+    // TODO: send email has some error , wait 
+    func newPassword(_ request: Request, container: NewsPasswordContainer) throws -> Future<JSONContainer<NewsPasswordResponse>> {
+        return User
+            .query(on: request)
+            .filter(\User.email == container.email)
+            .first()
+            .unwrap(or: Abort(.badRequest, reason: "No user found with email '\(container.email)'."))
+            .flatMap(to: (ActiveCode, User).self) { user in
+                return try user
+                    .codes
+                    .query(on: request)
+                    .first()
+                    .unwrap(or: Abort(.badRequest, reason: "No user found with ActiveCode '\(container.email)'.")).and(result: user)
+            }.flatMap(to: JSONContainer<NewsPasswordResponse>.self) { code, user in
+                guard code.state else {throw Abort(.badRequest, reason: "User not activated.")}
+                user.password = container.newPassword
+                return try user
+                    .user(with: request.make(BCryptDigest.self))
+                    .save(on: request)
+                    .flatMap(to: User.self){ user in
+                        return try self.sendMail(user: user, request: request).transform(to: user)
+                    }
+                    .transform(to: NewsPasswordResponse(status: "success"))
+                    .convertToCustomContainer()
+            }
+    }
 
     func registerUserHandler(_ request: Request, newUser: User) throws -> Future<JSONContainer<AuthenticationContainer>> {
         return User
@@ -78,7 +104,7 @@ extension UserRouteController {
 
             let promise = request.eventLoop.newPromise(Void.self)
             let scheme =  request.http.headers.firstValue(name: .host) ?? ""
-            let url = "https://\(scheme)/account/activate/\(code.code)"
+            let url = "https://\(scheme)/api/users/activate/\(code.code)"
 
             let sendGridClient = try request.make(SendGridClient.self)
             let subject = "subjuect"

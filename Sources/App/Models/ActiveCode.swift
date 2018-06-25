@@ -25,3 +25,11 @@ final class ActiveCode: Content {
 
 extension ActiveCode: MySQLModel {}
 extension ActiveCode: Migration {}
+
+extension ActiveCode {
+    var user: Parent<ActiveCode, User> {
+        return parent(\.userId)
+    }
+}
+
+

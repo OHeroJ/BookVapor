@@ -14,6 +14,14 @@ final class BookClassify: Content {
     var parentId: BookClassify.ID
     var path: String
 
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
     init(name: String, parentId: BookClassify.ID, path: String) {
         self.name = name
         self.parentId = parentId
