@@ -29,3 +29,5 @@ final class Friend: Content {
 
 extension Friend: MySQLModel {}
 extension Friend: Migration {}
+
+

@@ -16,6 +16,14 @@ final class ActiveCode: Content {
     var state: Bool // 是否激活
     var code: String
 
+    var createdAt: Date?
+    var updatedAt: Date?
+    var deletedAt: Date?
+
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
+    static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
     init(userId: User.ID, code: String) {
         self.userId = userId
         self.code = code

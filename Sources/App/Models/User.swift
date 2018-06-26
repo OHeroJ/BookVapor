@@ -39,7 +39,7 @@ extension User: MySQLModel {}
 extension User: Migration {}
 
 extension User {
-    var books: Children<User, Book> { // 发布的书
+    var publishedBooks: Children<User, Book> { // 发布的书
         return children(\.createId)
     }
 
@@ -47,7 +47,7 @@ extension User {
         return children(\.userId)
     }
 
-    var collectBooks: Siblings<User, Book, Collect> { // 收藏的书
+    var collectedBooks: Siblings<User, Book, Collect> { // 收藏的书
         return siblings()
     }
 
