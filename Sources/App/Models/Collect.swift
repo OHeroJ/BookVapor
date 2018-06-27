@@ -35,5 +35,13 @@ final class Collect: MySQLPivot {
 
 }
 
-extension Collect: Migration {}
+extension Collect: Migration {
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.userId, to: \User.id)
+            builder.reference(from: \.bookId, to: \Book.id)
+        }
+    }
+}
 

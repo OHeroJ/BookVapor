@@ -73,8 +73,6 @@ extension Book {
         return parent(\.createId)
     }
 
-
-
     var classify:Parent<Book, BookClassify> {
         return parent(\.classifyId)
     }
@@ -86,7 +84,6 @@ extension Book {
     var collectors: Siblings<Book, User, Collect> { // 收藏者
         return siblings()
     }
-
 }
 
 extension Book {
@@ -101,14 +98,14 @@ extension Book {
 extension Book: MySQLModel {}
 extension Book: Migration {
 
-//    static func prepare(on connection: MySQLConnection) -> Future<Void> {
-//        return Database.create(self, on: connection) { builder in
-//            try addProperties(to: builder)
-//            builder.reference(from: \.createId, to: \User.id)
-//            builder.reference(from: \.classifyId, to: \BookClassify.id)
-//            builder.reference(from: \.priceUintId, to: \PriceUnit.id)
-//        }
-//    }
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.createId, to: \User.id)
+            builder.reference(from: \.classifyId, to: \BookClassify.id)
+            builder.reference(from: \.priceUintId, to: \PriceUnit.id)
+        }
+    }
 }
 
 

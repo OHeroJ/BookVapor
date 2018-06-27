@@ -23,9 +23,23 @@ final class WishBook: Content {
     static var createdAtKey: TimestampKey? { return \.createdAt }
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
+    init(title: String, content: String, userId: User.ID, commentCount: Int = 0) {
+        self.title = title
+        self.content = content
+        self.userId = userId
+        self.commentCount = commentCount
+    }
 }
 
-extension WishBook: Migration {}
+extension WishBook: Migration {
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.userId, to: \User.id)
+        }
+    }
+}
 extension WishBook: MySQLModel {}
 
 

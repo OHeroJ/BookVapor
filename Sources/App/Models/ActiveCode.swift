@@ -32,7 +32,15 @@ final class ActiveCode: Content {
 }
 
 extension ActiveCode: MySQLModel {}
-extension ActiveCode: Migration {}
+extension ActiveCode: Migration {
+
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.userId, to: \User.id)
+        }
+    }
+}
 
 extension ActiveCode {
     var user: Parent<ActiveCode, User> {

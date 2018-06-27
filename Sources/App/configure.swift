@@ -50,6 +50,11 @@ public func configure(
     migrations.add(model: BookClassify.self, database: .mysql)
     migrations.add(model: Book.self, database: .mysql)
     migrations.add(model: ActiveCode.self, database: .mysql)
+    migrations.add(model: Feedback.self, database: .mysql)
+    migrations.add(model: MessageBoard.self, database: .mysql)
+    migrations.add(model: WishBook.self, database: .mysql)
+    migrations.add(model: WishBookComment.self, database: .mysql)
+    migrations.add(model: PriceUnit.self, database: .mysql)
     services.register(migrations)
     try configureWebsockets(&services)
 }

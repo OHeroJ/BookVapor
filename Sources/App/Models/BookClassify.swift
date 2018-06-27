@@ -29,7 +29,15 @@ final class BookClassify: Content {
     }
 }
 
-extension BookClassify: Migration {}
+extension BookClassify: Migration {
+
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.parentId, to: \BookClassify.id)
+        }
+    }
+}
 extension BookClassify: MySQLModel {}
 
 extension BookClassify {

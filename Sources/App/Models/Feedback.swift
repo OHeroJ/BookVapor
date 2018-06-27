@@ -29,7 +29,14 @@ final class Feedback: Content {
     }
 }
 
-extension Feedback: Migration {}
+extension Feedback: Migration {
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.userId, to: \User.id)
+        }
+    }
+}
 extension Feedback: MySQLModel {}
 
 extension Feedback {

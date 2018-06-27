@@ -24,9 +24,24 @@ final class Comment: Content {
     static var createdAtKey: TimestampKey? { return \.createdAt }
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
+
+    init(bookId: Book.ID, userId: User.ID, content: String, reportCount: Int) {
+        self.bookId = bookId
+        self.userId = userId
+        self.content = content
+        self.reportCount = reportCount
+    }
 }
 
-extension Comment: Migration {}
+extension Comment: Migration {
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.userId, to: \User.id)
+            builder.reference(from: \.bookId, to: \Book.id)
+        }
+    }
+}
 extension Comment: MySQLModel {}
 
 extension Comment {
