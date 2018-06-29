@@ -27,6 +27,18 @@ public func routes(_ router: Router) throws {
     let accountRouteController = AccountRouteController()
     try router.register(collection: accountRouteController)
 
+    let bookRouteController = BookRouteController()
+    try router.register(collection: bookRouteController)
+
+    let wishBookRouteController = WishBookRouteController()
+    try router.register(collection: wishBookRouteController)
+
+    let searchRouteController = SearchRouteController()
+    try router.register(collection: searchRouteController)
+
+    let newsRouteController = NewsRouteController()
+    try router.register(collection: newsRouteController)
+
     let chainController = ChainRouteController()
     try router.register(collection: chainController)
 

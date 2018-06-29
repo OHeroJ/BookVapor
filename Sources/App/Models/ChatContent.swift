@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 final class ChatContent: Content {
     var id: Int?
@@ -30,5 +30,5 @@ final class ChatContent: Content {
     }
 }
 
-extension ChatContent: MySQLModel {}
+extension ChatContent: PostgreSQLModel {}
 extension ChatContent: Migration {}

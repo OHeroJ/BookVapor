@@ -1,4 +1,4 @@
-import FluentMySQL
+import FluentPostgreSQL
 import Vapor
 import Authentication
 import SendGrid
@@ -14,6 +14,7 @@ public func configure(
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
+    try services.register(FluentPostgreSQLProvider())
     try services.register(AuthenticationProvider())
 
     let emailConfig = SendGridConfig(apiKey: "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")
@@ -28,33 +29,30 @@ public func configure(
     let middlewares = MiddlewareConfig()
     services.register(middlewares)
 
-    try services.register(FluentMySQLProvider())
-    let mysqlConfig = MySQLDatabaseConfig(hostname: "localhost",
-                                          port: 3306,
-                                          username: "root",
-                                          password: "lai12345",
-                                          database: "learn")
-
-    var databases = DatabasesConfig()
-    databases.add(database: MySQLDatabase(config: mysqlConfig),
-                  as: .mysql)
-    services.register(mysqlConfig)
+    let psqlConfig = PostgreSQLDatabaseConfig(hostname: "localhost",
+                                              port: 5432,
+                                              username: "root",
+                                              database: "book",
+                                              password: "lai12345")
+    services.register(psqlConfig)
 
     var migrations = MigrationConfig()
-    migrations.add(model: User.self, database: .mysql)
-    migrations.add(model: AccessToken.self, database: .mysql)
-    migrations.add(model: RefreshToken.self, database: .mysql)
-    migrations.add(model: ChatContent.self, database: .mysql)
-    migrations.add(model: Friend.self, database: .mysql)
-    migrations.add(model: PriceUnit.self, database: .mysql)
-    migrations.add(model: BookClassify.self, database: .mysql)
-    migrations.add(model: Book.self, database: .mysql)
-    migrations.add(model: ActiveCode.self, database: .mysql)
-    migrations.add(model: Feedback.self, database: .mysql)
-    migrations.add(model: MessageBoard.self, database: .mysql)
-    migrations.add(model: WishBook.self, database: .mysql)
-    migrations.add(model: WishBookComment.self, database: .mysql)
-    migrations.add(model: PriceUnit.self, database: .mysql)
+    migrations.add(model: User.self, database: .psql)
+
+    migrations.add(model: AccessToken.self, database: .psql)
+    migrations.add(model: RefreshToken.self, database: .psql)
+    
+    migrations.add(model: Friend.self, database: .psql)
+    migrations.add(model: PriceUnit.self, database: .psql)
+    migrations.add(model: BookClassify.self, database: .psql)
+    migrations.add(model: Book.self, database: .psql)
+    migrations.add(model: ActiveCode.self, database: .psql)
+    migrations.add(model: Feedback.self, database: .psql)
+    migrations.add(model: MessageBoard.self, database: .psql)
+    migrations.add(model: WishBook.self, database: .psql)
+    migrations.add(model: WishBookComment.self, database: .psql)
+    migrations.add(model: PriceUnit.self, database: .psql)
+    migrations.add(model: ChatContent.self, database: .psql)
     services.register(migrations)
     try configureWebsockets(&services)
 }

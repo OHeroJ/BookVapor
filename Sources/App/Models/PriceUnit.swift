@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 final class PriceUnit: Content {
     var id: Int?
@@ -26,7 +26,7 @@ final class PriceUnit: Content {
 }
 
 extension PriceUnit: Migration {}
-extension PriceUnit: MySQLModel {}
+extension PriceUnit: PostgreSQLModel {}
 
 extension PriceUnit {
     var books: Children<PriceUnit, Book> {

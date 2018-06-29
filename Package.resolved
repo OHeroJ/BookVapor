@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/vapor/auth.git",
         "state": {
           "branch": null,
-          "revision": "b84242ee3d450516b050f7a64fc0b81604f56077",
-          "version": "2.0.0-rc.4.1"
+          "revision": "8c783272bbef7490781e0879ae5e9b5ceced0ec0",
+          "version": "2.0.0-rc.5"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/vapor/core.git",
         "state": {
           "branch": null,
-          "revision": "e5582911ed940289212a36321e15ec561d947dbe",
-          "version": "3.3.0"
+          "revision": "7f56a09995bf3c8df562be456bdcda405d9d0678",
+          "version": "3.4.1"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/vapor/database-kit.git",
         "state": {
           "branch": null,
-          "revision": "4ac3e7437f9b95ce32b4d970bafa590bb3579647",
-          "version": "1.1.0"
+          "revision": "acdd4d3384ec0122dcfcca8d23d9054a2860ffba",
+          "version": "1.2.0"
         }
       },
       {
@@ -51,17 +51,26 @@
         "repositoryURL": "https://github.com/vapor/fluent.git",
         "state": {
           "branch": null,
-          "revision": "3b52f5c2124a40460418881ca64305eb39023e43",
-          "version": "3.0.0-rc.3"
+          "revision": "058b4579aea61dd05012f121fa9fa9042488c57b",
+          "version": "3.0.0-rc.4.0.2"
         }
       },
       {
-        "package": "FluentMySQL",
-        "repositoryURL": "https://github.com/vapor/fluent-mysql.git",
+        "package": "FluentPostgreSQL",
+        "repositoryURL": "https://github.com/vapor/fluent-postgresql.git",
         "state": {
           "branch": null,
-          "revision": "30d769badf89b73899952dcb097be6752868e07e",
-          "version": "3.0.0-rc.3"
+          "revision": "2a5b8d147d6937d3cca0951864fcf000590e099e",
+          "version": "1.0.0-rc.4.0.2"
+        }
+      },
+      {
+        "package": "FluentSQLite",
+        "repositoryURL": "https://github.com/vapor/fluent-sqlite.git",
+        "state": {
+          "branch": null,
+          "revision": "83075582da7414e5b3cdf179266381dec5a106b0",
+          "version": "3.0.0-rc.4.0.1"
         }
       },
       {
@@ -83,12 +92,21 @@
         }
       },
       {
-        "package": "MySQL",
-        "repositoryURL": "https://github.com/vapor/mysql.git",
+        "package": "Pagination",
+        "repositoryURL": "https://github.com/vapor-community/pagination.git",
         "state": {
           "branch": null,
-          "revision": "d542b2ef792e16f1f9fe7f05782f6e4a7a985aba",
-          "version": "3.0.0-rc.3"
+          "revision": "91658b8ff9300a196190faaa300b33c5e975783c",
+          "version": "1.0.6"
+        }
+      },
+      {
+        "package": "PostgreSQL",
+        "repositoryURL": "https://github.com/vapor/postgresql.git",
+        "state": {
+          "branch": null,
+          "revision": "c34533ebf7ae34cff1430a2803c83a02bb98557a",
+          "version": "1.0.0-rc.4.2.1"
         }
       },
       {
@@ -116,6 +134,24 @@
           "branch": null,
           "revision": "281a70b69783891900be31a9e70051b6fe19e146",
           "version": "1.0.0"
+        }
+      },
+      {
+        "package": "SQL",
+        "repositoryURL": "https://github.com/vapor/sql.git",
+        "state": {
+          "branch": null,
+          "revision": "f89155dbf3dd48c838f79d28a636bbe32ad38693",
+          "version": "2.0.0-beta.3"
+        }
+      },
+      {
+        "package": "SQLite",
+        "repositoryURL": "https://github.com/vapor/sqlite.git",
+        "state": {
+          "branch": null,
+          "revision": "500748e7bd9d19b9beeba5b4bccbe751741eb280",
+          "version": "3.0.0-rc.4.1"
         }
       },
       {
@@ -195,8 +231,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "09faa90db7ca49d7f75d5f8e385abce93bc7afb3",
-          "version": "3.0.4"
+          "revision": "74a46ecacca51d326a1e8cf4b7967827765f05bf",
+          "version": "3.0.5"
         }
       },
       {

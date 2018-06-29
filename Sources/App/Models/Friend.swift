@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 final class Friend: Content {
     var id: Int?
@@ -27,8 +27,8 @@ final class Friend: Content {
     }
 }
 
-extension Friend: MySQLModel {
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+extension Friend: PostgreSQLModel {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.userId, to: \User.id)

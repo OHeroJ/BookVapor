@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 import Crypto
 
 struct RefreshToken: Content {
@@ -30,9 +30,7 @@ struct RefreshToken: Content {
     }
 }
 
-
-
-extension RefreshToken: MySQLModel {}
+extension RefreshToken: PostgreSQLModel {}
 extension RefreshToken: Migration {}
 
 

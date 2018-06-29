@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 final class BookClassify: Content {
     var id: Int?
@@ -30,15 +30,14 @@ final class BookClassify: Content {
 }
 
 extension BookClassify: Migration {
-
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.parentId, to: \BookClassify.id)
         }
     }
 }
-extension BookClassify: MySQLModel {}
+extension BookClassify: PostgreSQLModel {}
 
 extension BookClassify {
     var books: Children<BookClassify, Book> {

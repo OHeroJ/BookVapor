@@ -6,10 +6,10 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 /// 收藏表
-final class Collect: MySQLPivot {
+final class Collect: PostgreSQLPivot {
     var id: Int?
     var userId: User.ID
     var bookId: Book.ID
@@ -36,7 +36,7 @@ final class Collect: MySQLPivot {
 }
 
 extension Collect: Migration {
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.userId, to: \User.id)

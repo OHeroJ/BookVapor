@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 /// 心愿书单
 final class WishBook: Content {
@@ -33,14 +33,14 @@ final class WishBook: Content {
 }
 
 extension WishBook: Migration {
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.userId, to: \User.id)
         }
     }
 }
-extension WishBook: MySQLModel {}
+extension WishBook: PostgreSQLModel {}
 
 
 

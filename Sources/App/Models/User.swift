@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 import Authentication
 
 final class User: Content {
@@ -35,7 +35,7 @@ final class User: Content {
     }
 }
 
-extension User: MySQLModel {}
+extension User: PostgreSQLModel {}
 extension User: Migration {}
 
 extension User {

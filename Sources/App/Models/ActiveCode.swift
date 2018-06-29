@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 /// 邮箱验证码
 
@@ -31,10 +31,10 @@ final class ActiveCode: Content {
     }
 }
 
-extension ActiveCode: MySQLModel {}
+extension ActiveCode: PostgreSQLModel {}
 extension ActiveCode: Migration {
 
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.userId, to: \User.id)

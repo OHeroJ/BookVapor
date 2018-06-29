@@ -7,7 +7,7 @@
 
 import Vapor
 import Fluent
-import FluentMySQL
+import FluentPostgreSQL
 import Crypto
 
 import SendGrid

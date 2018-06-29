@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 import Crypto
 import Authentication
 
@@ -35,8 +35,9 @@ struct AccessToken: Content {
     }
 }
 
-extension AccessToken: MySQLModel {}
+extension AccessToken: PostgreSQLModel {}
 extension AccessToken: Migration {}
+
 
 extension AccessToken: BearerAuthenticatable {
     static var tokenKey: WritableKeyPath<AccessToken, String> = \.token

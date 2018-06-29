@@ -7,7 +7,7 @@
 
 import Vapor
 import Crypto
-import FluentMySQL
+import FluentPostgreSQL
 import SendGrid
 
 final class UserRouteController: RouteCollection {

@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 // 用户留言板块
 final class MessageBoard: Content {
@@ -31,7 +31,7 @@ final class MessageBoard: Content {
 }
 
 extension MessageBoard: Migration {
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.userId, to: \User.id)
@@ -39,4 +39,4 @@ extension MessageBoard: Migration {
         }
     }
 }
-extension MessageBoard: MySQLModel {}
+extension MessageBoard: PostgreSQLModel {}

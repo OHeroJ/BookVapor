@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import FluentMySQL
+import FluentPostgreSQL
 
 /// 意见反馈
 
@@ -30,14 +30,14 @@ final class Feedback: Content {
 }
 
 extension Feedback: Migration {
-    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
             builder.reference(from: \.userId, to: \User.id)
         }
     }
 }
-extension Feedback: MySQLModel {}
+extension Feedback: PostgreSQLModel {}
 
 extension Feedback {
     var user: Parent<Feedback, User> {
