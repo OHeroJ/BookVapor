@@ -7,6 +7,7 @@
 
 import Vapor
 import FluentPostgreSQL
+import Pagination
 
 /// 评论表
 final class Comment: Content {
@@ -15,7 +16,7 @@ final class Comment: Content {
     var bookId: Book.ID // 评论书籍 ID
     var userId: User.ID // 评论者
     var content: String
-    var reportCount: Int
+    var reportCount: Int?
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -25,13 +26,15 @@ final class Comment: Content {
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
-    init(bookId: Book.ID, userId: User.ID, content: String, reportCount: Int) {
+    init(bookId: Book.ID, userId: User.ID, content: String, reportCount: Int = 0) {
         self.bookId = bookId
         self.userId = userId
         self.content = content
         self.reportCount = reportCount
     }
 }
+
+extension Comment: Paginatable {}
 
 extension Comment: Migration {
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {

@@ -11,32 +11,69 @@ import Authentication
 
 final class User: Content {
     var id: Int?
-    
     var phone: String?
     var name: String
     var email: String
     var avator: String?
     var password: String
-
+    var permissionLevel: User.Permission?
     var createdAt: Date?
     var updatedAt: Date?
     var deletedAt: Date?
-
     static var createdAtKey: TimestampKey? { return \.createdAt }
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
-    init(name: String, phone: String?, email: String, avator: String?, password: String) {
+    init(name: String,
+         phone: String?,
+         email: String,
+         avator: String?,
+         password: String,
+         permissionLevel: User.Permission = .standard) {
         self.name = name
         self.phone = phone
         self.email = email
         self.avator = avator
         self.password = password
+        self.permissionLevel = permissionLevel
     }
 }
 
 extension User: PostgreSQLModel {}
 extension User: Migration {}
+
+extension User{
+    enum Permission: String, Content, PostgreSQLEnum, PostgreSQLMigration {
+        static let postgreSQLEnumTypeName = "UserPermission"
+        static var allCases: [User.Permission] = [.admin, .moderator, .standard]
+        case admin
+        case moderator
+        case standard
+    }
+}
+// 添加字段
+/*
+struct AddLevelProperty: Migration {
+    typealias Database = PostgreSQLDatabase
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        return Database.update(User.self, on: connection) { builder in
+            builder.field(for: \.permissionLevel)
+        }
+    }
+    static func revert(on conn: PostgreSQLConnection) -> Future<Void> {
+        return Database.update(User.self, on: conn) { builder in
+            builder.deleteField(for: \.permissionLevel)
+        }
+    }
+}
+*/
+
+// router.get("users", User.parameter) { req -> String in
+//     // ....
+// }
+// extension User: Parameter {}
+
+
 
 extension User {
     var publishedBooks: Children<User, Book> { // 发布的书
@@ -50,7 +87,6 @@ extension User {
     var collectedBooks: Siblings<User, Book, Collect> { // 收藏的书
         return siblings()
     }
-
 }
 
 // MARK:- Public
@@ -85,7 +121,6 @@ extension Future where T: User {
     }
 }
 
-
 //MARK: BasicAuthenticatable
 extension User: BasicAuthenticatable {
     static var usernameKey: WritableKeyPath<User, String> = \.email
@@ -106,9 +141,3 @@ extension User: Validatable {
         return validations
     }
 }
-
-
-
-
-
-

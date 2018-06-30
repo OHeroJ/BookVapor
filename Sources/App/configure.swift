@@ -34,11 +34,15 @@ public func configure(
                                               username: "root",
                                               database: "book",
                                               password: "lai12345")
-    services.register(psqlConfig)
+
+    var databases = DatabasesConfig()
+    databases.add(database: PostgreSQLDatabase(config: psqlConfig), as: .psql)
+    databases.enableLogging(on: .psql)
+    services.register(databases)
 
     var migrations = MigrationConfig()
+    migrations.add(migration: User.Permission.self, database: .psql)
     migrations.add(model: User.self, database: .psql)
-
     migrations.add(model: AccessToken.self, database: .psql)
     migrations.add(model: RefreshToken.self, database: .psql)
     
@@ -53,6 +57,9 @@ public func configure(
     migrations.add(model: WishBookComment.self, database: .psql)
     migrations.add(model: PriceUnit.self, database: .psql)
     migrations.add(model: ChatContent.self, database: .psql)
+
+    //migrations.add(migration: AddLevelProperty.self, database: .psql)
+
     services.register(migrations)
     try configureWebsockets(&services)
 }

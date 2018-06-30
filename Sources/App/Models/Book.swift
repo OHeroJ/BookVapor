@@ -7,6 +7,7 @@
 
 import Vapor
 import FluentPostgreSQL
+import Pagination
 
 final class Book: Content {
     var id:Int?
@@ -85,6 +86,8 @@ extension Book {
         return siblings()
     }
 }
+
+extension Book: Paginatable {}
 
 extension Book {
     enum State: Int, Codable {
