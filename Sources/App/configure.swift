@@ -26,7 +26,21 @@ public func configure(
     services.register(serverConfig)
 
     /// 配置全局的 middleware
-    let middlewares = MiddlewareConfig()
+    var middlewares = MiddlewareConfig()
+    let corsConfig = CORSMiddleware.Configuration(
+        allowedOrigin: .originBased,
+        allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent],
+        exposedHeaders: [
+            HTTPHeaderName.authorization.description,
+            HTTPHeaderName.contentLength.description,
+            HTTPHeaderName.contentType.description,
+            HTTPHeaderName.contentDisposition.description,
+            HTTPHeaderName.cacheControl.description,
+            HTTPHeaderName.expires.description
+        ]
+    )
+    middlewares.use(CORSMiddleware(configuration: corsConfig))
     services.register(middlewares)
 
     let psqlConfig = PostgreSQLDatabaseConfig(hostname: "localhost",
