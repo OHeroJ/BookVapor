@@ -71,6 +71,7 @@ public func configure(
     migrations.add(model: WishBookComment.self, database: .psql)
     migrations.add(model: PriceUnit.self, database: .psql)
     migrations.add(model: ChatContent.self, database: .psql)
+    migrations.add(model: Menu.self, database: .psql)
 
     //migrations.add(migration: AddLevelProperty.self, database: .psql)
 

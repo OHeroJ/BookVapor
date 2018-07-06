@@ -15,11 +15,21 @@ public func routes(_ router: Router) throws {
             .firstValue(name: HTTPHeaderName.host) ?? ""
     }
 
+    func handleTestPost(_ request: Request) throws -> Future<User.Public> {
+        return try request.content.decode(User.self).convertToPublic()
+    }
+
+    router.post("test", use: handleTestPost)
+
+
     let authRouteController = AuthenticationRouteController()
     try router.register(collection: authRouteController)
 
     let userRouteController = UserRouteController()
     try router.register(collection: userRouteController)
+
+    let sysRouteController = SysRouteController()
+    try router.register(collection: sysRouteController)
 
     let protectedRouteController = ProtectedRoutesController()
     try router.register(collection: protectedRouteController)
