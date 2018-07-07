@@ -38,17 +38,29 @@ extension SysRouteController {
 
     func getMenuList(_ request: Request) throws -> Future<JSONContainer<[Menu.Public]>> {
         let _ = try request.requireAuthenticated(User.self)
-        return  Menu
+        return Menu
             .query(on: request)
-            .filter(\Menu.parentId == 0)
             .all()
-            .map(to: [Menu.Public].self, { menus in
-                return try menus.compactMap { menu in
-                    return try menu.convertToPublic(on: request)
-                }
-            })
-            .convertToCustomContainer()
-
+            .map{ menus in
+                return self.createTree(parentId: 0, originArray: menus)
+            }.convertToCustomContainer()
     }
-
 }
+
+extension SysRouteController  {
+    func createTree(parentId: Menu.ID, originArray: [Menu]) -> [Menu.Public] {
+        let firstParents = originArray.filter({ $0.parentId == parentId})
+        let originArr = Array(originArray.drop(while: {$0.parentId == parentId}))
+        if (firstParents.count > 0) {
+            return firstParents.map { (menu) ->  Menu.Public in
+                return menu.convertToPublic(childrens: createTree(parentId: menu.id!, originArray: originArr))
+            }
+        } else {
+            return []
+        }
+    }
+}
+
+
+
+

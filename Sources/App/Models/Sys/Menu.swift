@@ -47,16 +47,7 @@ extension Menu {
         var children: [Public]
     }
 
-    func convertToPublic(on request: Request) throws -> Public {
-        let chils = try self.children
-            .query(on: request)
-            .all()
-            .map{ menus in
-                try menus.compactMap { menu in
-                    return try menu.convertToPublic(on: request)
-                }
-            }
-
+    func convertToPublic(childrens: [Public]) -> Public {
         return Public(id: self.id,
                       parentId: self.parentId,
                       sort: self.sort,
@@ -64,7 +55,7 @@ extension Menu {
                       href: self.href,
                       icon: self.icon,
                       isShow: self.isShow,
-                      children: chils)
+                      children: childrens)
     }
 }
 
