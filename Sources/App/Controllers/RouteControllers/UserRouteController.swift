@@ -26,18 +26,18 @@ final class UserRouteController: RouteCollection {
 
 //MARK: Helper
 private extension UserRouteController {
-    func loginUserHandler(_ request: Request, user: UserLoginContainer) throws -> Future<JSONContainer<AuthenticationContainer>> {
+    func loginUserHandler(_ request: Request, user: UserLoginContainer) throws -> Future<Response> {
         return User
             .query(on: request)
             .filter(\.email == user.email)
             .first()
             .flatMap { existingUser in
                 guard let existingUser = existingUser else {
-                    return request.future(JSONContainer<AuthenticationContainer>(code: 1, message: "不存在该用户"))
+                    return try JSONContainer.error(status: .userNotExist).encode(for: request)
                 }
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(user.password, created: existingUser.password) else {
-                     return request.future(JSONContainer<AuthenticationContainer>(code: 2, message: "认证失败")) /* authentication failure */
+                    return try JSONContainer.error(message: "认证失败").encode(for: request)
                 }
                 return try self.authController.authenticationContainer(for: existingUser, on: request)
             }

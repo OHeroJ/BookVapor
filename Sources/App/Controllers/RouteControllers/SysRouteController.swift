@@ -18,11 +18,31 @@ final class SysRouteController: RouteCollection {
         let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
 
         tokenAuthGroup.get("menu", "list", use: getMenuList)
-        tokenAuthGroup.post(Menu.self, at:"menu", use: createMenu)
+        tokenAuthGroup.post(Menu.self, at:"menu", "add", use: createMenu)
+       // tokenAuthGroup.delete("menu", "delete", use: deleteMenu)
     }
 }
 
 extension SysRouteController {
+
+//    func deleteMenu(_ request: Request) throws -> Future<JSONContainer<String>> {
+//        let _ = try request.requireAuthenticated(User.self)
+//        return try request
+//            .content
+//            .decode(MenuContainer.self)
+//            .flatMap(to: JSONContainer<String>.self) { container  in
+//                return Menu
+//                    .find(container.id, on: request)
+//                    .map { menu -> Int in
+//                        guard let tmenu = menu else { return JSONContainer(code: 1, message: "不存在", data:  "")}
+//                        return tmenu
+//                            .delete(on: request)
+//                            .
+//
+//
+//                }
+//        }
+//    }
 
     func createMenu(_ request: Request, menu: Menu) throws -> Future<JSONContainer<Menu>> {
         let _ = try request.requireAuthenticated(User.self)

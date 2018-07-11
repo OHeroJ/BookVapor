@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "APIErrorMiddleware",
+        "repositoryURL": "https://github.com/skelpo/APIErrorMiddleware.git",
+        "state": {
+          "branch": null,
+          "revision": "202590004f528c54f907018b3422e83d64605a94",
+          "version": "0.3.3"
+        }
+      },
+      {
         "package": "Auth",
         "repositoryURL": "https://github.com/vapor/auth.git",
         "state": {

@@ -16,6 +16,7 @@ final class User: Content {
     var email: String
     var avator: String?
     var password: String
+    var delFlag: Bool?
     var permissionLevel: User.Permission?
     var createdAt: Date?
     var updatedAt: Date?
@@ -29,13 +30,14 @@ final class User: Content {
          email: String,
          avator: String?,
          password: String,
-         permissionLevel: User.Permission = .standard) {
+         permissionLevel: User.Permission = .standard, delFlag: Bool = false) {
         self.name = name
         self.phone = phone
         self.email = email
         self.avator = avator
         self.password = password
         self.permissionLevel = permissionLevel
+        self.delFlag = false
     }
 }
 

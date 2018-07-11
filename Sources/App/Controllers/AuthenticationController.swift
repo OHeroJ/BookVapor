@@ -15,14 +15,14 @@ import SendGrid
 final class AuthenticationController {
 
     //MARK: Actions
-    func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: DatabaseConnectable) throws -> Future<JSONContainer<AuthenticationContainer>> {
+    func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: Request) throws -> Future<Response> {
         return try existingUser(matchingTokenString: refreshToken, on: connection).flatMap { user in
-            guard let user = user else { throw Abort(.notFound) }
+            guard let user = user else { return try JSONContainer.error(message: "用户不存在").encode(for: connection)}
             return try self.authenticationContainer(for: user, on: connection)
         }
     }
 
-    func authenticationContainer(for user: User, on connection: DatabaseConnectable) throws -> Future<JSONContainer<AuthenticationContainer>> {
+    func authenticationContainer(for user: User, on connection: DatabaseConnectable) throws -> Future<Response> {
         return try removeAllTokens(for: user, on: connection)
             .flatMap { _ in
             return try map(to: AuthenticationContainer.self,

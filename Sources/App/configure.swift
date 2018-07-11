@@ -2,6 +2,7 @@ import FluentPostgreSQL
 import Vapor
 import Authentication
 import SendGrid
+import APIErrorMiddleware
 
 /// Called before your application initializes.
 ///
@@ -25,8 +26,15 @@ public func configure(
                                                port: 8080)
     services.register(serverConfig)
 
+
+
     /// 配置全局的 middleware
     var middlewares = MiddlewareConfig()
+
+    middlewares.use(APIErrorMiddleware.init(environment: env, specializations: [
+        ModelNotFound()
+    ]))
+
     let corsConfig = CORSMiddleware.Configuration(
         allowedOrigin: .originBased,
         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
@@ -72,7 +80,8 @@ public func configure(
     migrations.add(model: PriceUnit.self, database: .psql)
     migrations.add(model: ChatContent.self, database: .psql)
     migrations.add(model: Menu.self, database: .psql)
-
+    migrations.add(model: News.self, database: .psql)
+    migrations.add(model: Role.self, database: .psql)
     //migrations.add(migration: AddLevelProperty.self, database: .psql)
 
     services.register(migrations)
