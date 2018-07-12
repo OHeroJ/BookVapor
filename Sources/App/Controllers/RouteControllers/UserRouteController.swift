@@ -18,7 +18,6 @@ final class UserRouteController: RouteCollection {
         
         group.post(UserLoginContainer.self, at: "login", use: loginUserHandler)
         group.post(User.self, at: "register", use: registerUserHandler)
-
         /// 修改密码 
         group.post(NewsPasswordContainer.self, at:"newPassword", use: newPassword)
     }
@@ -37,7 +36,7 @@ private extension UserRouteController {
                 }
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(user.password, created: existingUser.password) else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "认证失败"))
+                    return try request.makeErrorJson(message: "认证失败")
                 }
                 return try self.authController.authenticationContainer(for: existingUser, on: request)
             }
@@ -52,7 +51,7 @@ private extension UserRouteController {
             .first()
             .flatMap{ user in
                 guard let user = user else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "No user found with email '\(container.email)'."))
+                    return try request.makeErrorJson(message: "No user found with email '\(container.email)'.")
                 }
                 return try user
                     .codes
@@ -61,7 +60,7 @@ private extension UserRouteController {
                     .flatMap { code in
                         // 只有激活的用户才可以修改密码
                         guard let code = code, code.state else {
-                            return try request.makeJson(response: JSONContainer<Empty>.error(message: "User not activated."))
+                            return try request.makeErrorJson(message: "User not activated.")
                         }
                         user.password = container.password
                         return try user.user(with: request.make(BCryptDigest.self))
@@ -69,7 +68,7 @@ private extension UserRouteController {
                             .flatMap { user in
                                 // 异步
                                 return try self.sendMail(user: user, request: request).transform(to: user)
-                            }.makeJsonResponse(request: request)
+                            }.makeJsonResponse(on: request)
                     }
             }
     }
@@ -81,7 +80,7 @@ private extension UserRouteController {
             .first()
             .flatMap{ existingUser in
                 guard existingUser == nil else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "This email is already registered."))
+                    return try request.makeErrorJson(message: "This email is already registered.")
                 }
                 try newUser.validate()
                 return try newUser

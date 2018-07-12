@@ -17,7 +17,7 @@ final class AuthenticationController {
     //MARK: Actions
     func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: Request) throws -> Future<Response> {
         return try existingUser(matchingTokenString: refreshToken, on: connection).flatMap { user in
-            guard let user = user else { return try connection.makeJson(response: JSONContainer<Empty>.error(message: "用户不存在"))}
+            guard let user = user else { return try connection.makeErrorJson(message: "用户不存在")}
             return try self.authenticationContainer(for: user, on: connection)
         }
     }

@@ -19,30 +19,25 @@ final class SysRouteController: RouteCollection {
 
         tokenAuthGroup.get("menu", "list", use: getMenuList)
         tokenAuthGroup.post(Menu.self, at:"menu", "add", use: createMenu)
-       // tokenAuthGroup.delete("menu", "delete", use: deleteMenu)
+        tokenAuthGroup.post(MenuContainer.self, at: "menu", "delete", use: deleteMenu)
     }
 }
 
 extension SysRouteController {
 
-//    func deleteMenu(_ request: Request) throws -> Future<JSONContainer<String>> {
-//        let _ = try request.requireAuthenticated(User.self)
-//        return try request
-//            .content
-//            .decode(MenuContainer.self)
-//            .flatMap(to: JSONContainer<String>.self) { container  in
-//                return Menu
-//                    .find(container.id, on: request)
-//                    .map { menu -> Int in
-//                        guard let tmenu = menu else { return JSONContainer(code: 1, message: "不存在", data:  "")}
-//                        return tmenu
-//                            .delete(on: request)
-//                            .
-//
-//
-//                }
-//        }
-//    }
+    func deleteMenu(_ request: Request, container: MenuContainer) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return Menu
+            .find(container.id, on: request)
+            .flatMap { menu in
+                guard let tmenu = menu else {
+                    return try request.makeErrorJson(message: "不存在")
+                }
+                return try tmenu
+                    .delete(on: request)
+                    .makeVoidJson(request: request)
+        }
+    }
 
     func createMenu(_ request: Request, menu: Menu) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
@@ -52,9 +47,9 @@ extension SysRouteController {
             .first()
             .flatMap { exisMenu in
                 guard let _ = exisMenu  else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "Menu 已经存在"))
+                    return try request.makeErrorJson(message: "Menu 已经存在")
                 }
-                return try menu.save(on: request).makeJsonResponse(request: request)
+                return try menu.save(on: request).makeJsonResponse(on: request)
             }
     }
 
@@ -65,7 +60,7 @@ extension SysRouteController {
             .all()
             .map{ menus in
                 return self.createTree(parentId: 0, originArray: menus)
-            }.makeJsonResponse(request: request)
+            }.makeJsonResponse(on: request)
     }
 }
 

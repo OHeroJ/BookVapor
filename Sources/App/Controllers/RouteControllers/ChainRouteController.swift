@@ -13,7 +13,6 @@ final class ChainRouteController: RouteCollection {
     }
 }
 
-
 extension ChainRouteController {
     private func blocks(_ req: Request) throws -> Future<[Block]> {
         let promiss = req.eventLoop.newPromise([Block].self)

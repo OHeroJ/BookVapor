@@ -30,9 +30,8 @@ private extension ProtectedRoutesController {
     /// 用 basic 获取用户信息
     func basicAuthRouteHandler(_ request: Request) throws -> Future<Response> {
         let user =  try request
-        .requireAuthenticated(User.self)
-        .convertToPublic()
-
+            .requireAuthenticated(User.self)
+            .convertToPublic()
         return try request.makeJson(response: JSONContainer(data: user))
     }
 
@@ -41,7 +40,6 @@ private extension ProtectedRoutesController {
         let user =  try request
             .requireAuthenticated(User.self)
             .convertToPublic()
-
         return try request.makeJson(response: JSONContainer(data: user))
     }
 }
