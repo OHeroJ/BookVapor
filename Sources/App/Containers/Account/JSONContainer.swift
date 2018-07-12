@@ -72,7 +72,26 @@ struct JSONContainer<D: Content>: Content {
     static func error(status: ResponseStatus) -> JSONContainer<Empty> {
         return JSONContainer<Empty>(status: status, message: status.desc, data:nil)
     }
+}
 
+extension Future where T: Content{
+    func makeJsonResponse(request: Request) throws -> Future<Response> {
+        return try self.map { data in
+            return JSONContainer(data: data)
+        }.encode(for: request)
+    }
+
+    func makeErrorJsonResponse(status: ResponseStatus, message: String? = nil, request: Request) throws -> Future<Response> {
+        return try self.map { data in
+            return JSONContainer<Empty>(status: status, message: message ?? status.desc, data: nil)
+        }.encode(for: request)
+    }
+}
+
+extension Request {
+    func makeJson<C>(response: JSONContainer<C>) throws -> Future<Response> {
+        return try response.encode(for: self)
+    }
 }
 
 

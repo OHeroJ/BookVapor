@@ -28,19 +28,21 @@ final class ProtectedRoutesController: RouteCollection {
 private extension ProtectedRoutesController {
 
     /// 用 basic 获取用户信息
-    func basicAuthRouteHandler(_ request: Request) throws -> JSONContainer<User.Public> {
-        return try request
+    func basicAuthRouteHandler(_ request: Request) throws -> Future<Response> {
+        let user =  try request
         .requireAuthenticated(User.self)
         .convertToPublic()
-        .convertToSuccessContainer()
+
+        return try request.makeJson(response: JSONContainer(data: user))
     }
 
     /// 用 token 获取用户信息
-    func tokenAuthRouteHandler(_ request: Request) throws -> JSONContainer<User.Public> {
-        return try request
-                .requireAuthenticated(User.self)
-                .convertToPublic()
-                .convertToSuccessContainer()
+    func tokenAuthRouteHandler(_ request: Request) throws -> Future<Response> {
+        let user =  try request
+            .requireAuthenticated(User.self)
+            .convertToPublic()
+
+        return try request.makeJson(response: JSONContainer(data: user))
     }
 }
 

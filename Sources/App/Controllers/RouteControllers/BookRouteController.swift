@@ -26,37 +26,39 @@ final class BookRouteController: RouteCollection {
 extension BookRouteController {
 
     /// 评论列表
-    func listCommentsHandle(_ request: Request) throws -> Future<JSONContainer<Paginated<Comment>>> {
+    func listCommentsHandle(_ request: Request) throws -> Future<Response> {
         let container = try request.query.decode(BookCommentListContainer.self)
         return try Comment
             .query(on: request)
             .filter(\.bookId == container.bookId)
             .paginate(for: request)
-            .convertToCustomContainer()
+            .flatMap{ pages in
+                return try JSONContainer.init(data: pages).encode(for: request)
+            }
     }
 
     /// 创建评论
-    func commentBookHandle(_ request: Request, container: Comment) throws -> Future<JSONContainer<Comment>> {
+    func commentBookHandle(_ request: Request, container: Comment) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id , userId == container.userId else {
-            throw Abort(.badRequest, reason: "用户不存在")
+            return try request.makeJson(response: JSONContainer<Empty>.error(message: "用户不存在"))
         }
         let comment = Comment(bookId: container.bookId, userId: userId, content: container.content)
 
         // TODO: 推送 + 消息
-        return comment.create(on: request).convertToCustomContainer()
+        return try comment.create(on: request).makeJsonResponse(request: request)
     }
 
     /// 首页书籍列表
-    func listBooksHandle(_ request: Request) throws -> Future<JSONContainer<Paginated<Book>>>  {
+    func listBooksHandle(_ request: Request) throws -> Future<Response>  {
         return try Book
             .query(on: request)
             .paginate(for: request)
-            .convertToCustomContainer()
+            .makeJsonResponse(request: request)
     }
 
     /// 创建书籍
-    func createBookHandler(_ request: Request, container: BookCreateContainer) throws -> Future<JSONContainer<Book>> {
+    func createBookHandler(_ request: Request, container: BookCreateContainer) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id else {
             throw Abort(.badRequest, reason: "认证失败", identifier: nil)
@@ -76,7 +78,7 @@ extension BookRouteController {
                         createId: userId,
                         classifyId: container.classifyId,
                         priceUintId: container.priceUintId)
-        return book.create(on:request).convertToCustomContainer()
+        return try book.create(on:request).makeJsonResponse(request: request)
     }
 }
 

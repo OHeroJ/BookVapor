@@ -30,7 +30,7 @@ final class AuthenticationRouteController: RouteCollection {
 
 //MARK: Helper
 extension AuthenticationRouteController {
-    func refreshAccessTokenHandler(_ request: Request, container: RefreshTokenContainer) throws -> Future<JSONContainer<AuthenticationContainer>> {
+    func refreshAccessTokenHandler(_ request: Request, container: RefreshTokenContainer) throws -> Future<Response> {
         return try authController.authenticationContainer(for: container.refreshToken, on: request)
     }
 

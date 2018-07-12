@@ -22,11 +22,11 @@ final class AccountRouteController: RouteCollection {
 }
 
 extension AccountRouteController {
-    func getAcccountInfo(_ request: Request) throws -> JSONContainer<User.Public> {
-        return try request
+    func getAcccountInfo(_ request: Request) throws -> Future<Response> {
+        let user = try request
             .requireAuthenticated(User.self)
             .convertToPublic()
-            .convertToSuccessContainer()
+        return try JSONContainer.init(data: user).encode(for: request)
     }
 }
 

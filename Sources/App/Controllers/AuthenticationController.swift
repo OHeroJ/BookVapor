@@ -17,19 +17,21 @@ final class AuthenticationController {
     //MARK: Actions
     func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: Request) throws -> Future<Response> {
         return try existingUser(matchingTokenString: refreshToken, on: connection).flatMap { user in
-            guard let user = user else { return try JSONContainer.error(message: "用户不存在").encode(for: connection)}
+            guard let user = user else { return try connection.makeJson(response: JSONContainer<Empty>.error(message: "用户不存在"))}
             return try self.authenticationContainer(for: user, on: connection)
         }
     }
 
-    func authenticationContainer(for user: User, on connection: DatabaseConnectable) throws -> Future<Response> {
+    func authenticationContainer(for user: User, on connection: Request) throws -> Future<Response> {
         return try removeAllTokens(for: user, on: connection)
             .flatMap { _ in
             return try map(to: AuthenticationContainer.self,
                            self.accessToken(for: user, on: connection),
                            self.refreshToken(for: user, on: connection)) { access, refresh in
                 return AuthenticationContainer(accessToken: access, refreshToken: refresh)
-            }.convertToCustomContainer()
+                }.flatMap { (author)  in
+                    return try JSONContainer.init(data: author).encode(for: connection)
+                }
         }
     }
 

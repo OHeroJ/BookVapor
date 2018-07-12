@@ -33,63 +33,65 @@ private extension UserRouteController {
             .first()
             .flatMap { existingUser in
                 guard let existingUser = existingUser else {
-                    return try JSONContainer.error(status: .userNotExist).encode(for: request)
+                    return try request.makeJson(response: JSONContainer<Empty>.error(status: .userNotExist))
                 }
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(user.password, created: existingUser.password) else {
-                    return try JSONContainer.error(message: "认证失败").encode(for: request)
+                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "认证失败"))
                 }
                 return try self.authController.authenticationContainer(for: existingUser, on: request)
             }
     }
 
     // TODO: send email has some error , wait 
-    func newPassword(_ request: Request, container: NewsPasswordContainer) throws -> Future<JSONContainer<NewsPasswordResponse>> {
+    func newPassword(_ request: Request, container: NewsPasswordContainer) throws -> Future<Response> {
+
         return User
             .query(on: request)
-            .filter(\User.email == container.email)
+            .filter(\.email == container.email)
             .first()
-            .unwrap(or: Abort(.badRequest, reason: "No user found with email '\(container.email)'."))
-            .flatMap(to: (ActiveCode, User).self) { user in
+            .flatMap{ user in
+                guard let user = user else {
+                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "No user found with email '\(container.email)'."))
+                }
                 return try user
                     .codes
                     .query(on: request)
                     .first()
-                    .unwrap(or: Abort(.badRequest, reason: "No user found with ActiveCode '\(container.email)'.")).and(result: user)
-            }.flatMap(to: JSONContainer<NewsPasswordResponse>.self) { code, user in
-                guard code.state else {throw Abort(.badRequest, reason: "User not activated.")}
-                user.password = container.newPassword
-                return try user
-                    .user(with: request.make(BCryptDigest.self))
-                    .save(on: request)
-                    .flatMap(to: User.self){ user in
-                        return try self.sendMail(user: user, request: request).transform(to: user)
+                    .flatMap { code in
+                        // 只有激活的用户才可以修改密码
+                        guard let code = code, code.state else {
+                            return try request.makeJson(response: JSONContainer<Empty>.error(message: "User not activated."))
+                        }
+                        user.password = container.password
+                        return try user.user(with: request.make(BCryptDigest.self))
+                            .save(on: request)
+                            .flatMap { user in
+                                // 异步
+                                return try self.sendMail(user: user, request: request).transform(to: user)
+                            }.makeJsonResponse(request: request)
                     }
-                    .transform(to: NewsPasswordResponse(status: "success"))
-                    .convertToCustomContainer()
             }
     }
 
-    func registerUserHandler(_ request: Request, newUser: User) throws -> Future<JSONContainer<AuthenticationContainer>> {
+    func registerUserHandler(_ request: Request, newUser: User) throws -> Future<Response> {
         return User
             .query(on: request)
             .filter(\.email == newUser.email)
             .first()
-            .flatMap (to: User.self){ existingUser in
+            .flatMap{ existingUser in
                 guard existingUser == nil else {
-                    throw Abort(.badRequest, reason: "This email is already registered.")
+                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "This email is already registered."))
                 }
                 try newUser.validate()
                 return try newUser
                     .user(with: request.make(BCryptDigest.self))
-                    .save(on: request)
-            }.flatMap(to: User.self) { user in
-                return try self.sendMail(user: user, request: request)
-                    .transform(to: user)
-            }.flatMap { user in
-                let logger = try request.make(Logger.self)
-                logger.warning("New user created: \(user.email)")
-                return try self.authController.authenticationContainer(for: user, on: request)
+                    .create(on: request)
+                    .flatMap{ user in
+                        return try self.sendMail(user: user, request: request).transform(to: user)
+                    }.flatMap { user in
+                        return try self.authController.authenticationContainer(for: user, on: request)
+                    }
             }
         }
 }

@@ -12,7 +12,3 @@ struct NewsPasswordContainer: Content {
     let password: String
     let newPassword: String
 }
-
-struct NewsPasswordResponse: Content {
-    let status: String
-}

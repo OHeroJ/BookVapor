@@ -44,26 +44,28 @@ extension SysRouteController {
 //        }
 //    }
 
-    func createMenu(_ request: Request, menu: Menu) throws -> Future<JSONContainer<Menu>> {
+    func createMenu(_ request: Request, menu: Menu) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
         return Menu
             .query(on: request)
             .filter(\Menu.name == menu.name)
             .first()
-            .flatMap(to: Menu.self) { exisMenu in
-                guard exisMenu == nil else {throw Abort(.badRequest, reason: "This menu is already exist")}
-                return menu.save(on: request)
-            }.convertToCustomContainer()
+            .flatMap { exisMenu in
+                guard let _ = exisMenu  else {
+                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "Menu 已经存在"))
+                }
+                return try menu.save(on: request).makeJsonResponse(request: request)
+            }
     }
 
-    func getMenuList(_ request: Request) throws -> Future<JSONContainer<[Menu.Public]>> {
+    func getMenuList(_ request: Request) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
-        return Menu
+        return try Menu
             .query(on: request)
             .all()
             .map{ menus in
                 return self.createTree(parentId: 0, originArray: menus)
-            }.convertToCustomContainer()
+            }.makeJsonResponse(request: request)
     }
 }
 
