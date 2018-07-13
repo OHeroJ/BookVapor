@@ -8,6 +8,8 @@
 import Vapor
 import FluentPostgreSQL
 
+/// 角色表
+
 final class Role: Content {
     var id: Int?
     var delFlag: Bool
@@ -26,9 +28,10 @@ final class Role: Content {
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
     init(parentId: Role.ID,
-         sort: Int, name:String,
+         sort: Int,
+         name:String,
          remarks: String? = nil,
-         usable: Bool = false,
+         usable: Bool = true,
          delFlag: Bool = false) {
         self.parentId = parentId
         self.sort = sort

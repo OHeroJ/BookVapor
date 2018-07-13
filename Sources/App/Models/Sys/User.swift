@@ -9,18 +9,20 @@ import Vapor
 import FluentPostgreSQL
 import Authentication
 
+/// 用户表
 final class User: Content {
     var id: Int?
+    var organizId: Organization.ID
     var phone: String?
     var name: String
     var email: String
     var avator: String?
     var password: String
     var delFlag: Bool?
-    var permissionLevel: User.Permission?
     var createdAt: Date?
     var updatedAt: Date?
     var deletedAt: Date?
+
     static var createdAtKey: TimestampKey? { return \.createdAt }
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
@@ -30,27 +32,25 @@ final class User: Content {
          email: String,
          avator: String?,
          password: String,
-         permissionLevel: User.Permission = .standard, delFlag: Bool = false) {
+        delFlag: Bool = false) {
         self.name = name
         self.phone = phone
         self.email = email
         self.avator = avator
         self.password = password
-        self.permissionLevel = permissionLevel
         self.delFlag = false
+        // TODO
+        self.organizId = 0
     }
 }
 
 extension User: PostgreSQLModel {}
-extension User: Migration {}
-
-extension User{
-    enum Permission: String, Content, PostgreSQLEnum, PostgreSQLMigration {
-        static let postgreSQLEnumTypeName = "UserPermission"
-        static var allCases: [User.Permission] = [.admin, .moderator, .standard]
-        case admin
-        case moderator
-        case standard
+extension User: Migration {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.organizId, to: \Organization.id)
+        }
     }
 }
 // 添加字段
@@ -88,6 +88,10 @@ extension User {
 
     var collectedBooks: Siblings<User, Book, Collect> { // 收藏的书
         return siblings()
+    }
+
+    var organization: Parent<User, Organization> { // 组织
+        return parent(\.organizId)
     }
 }
 

@@ -63,8 +63,21 @@ public func configure(
     services.register(databases)
 
     var migrations = MigrationConfig()
-    migrations.add(migration: User.Permission.self, database: .psql)
+    migrations.add(model: Organization.self, database: .psql)
     migrations.add(model: User.self, database: .psql)
+    migrations.add(model: Menu.self, database: .psql)
+    migrations.add(model: News.self, database: .psql)
+    migrations.add(model: Role.self, database: .psql)
+    migrations.add(model: OpLog.self, database: .psql)
+    migrations.add(model: Right.self, database: .psql)
+    migrations.add(model: Group.self, database: .psql)
+    migrations.add(model: RoleRight.self, database: .psql)
+    migrations.add(model: GroupRight.self, database: .psql)
+    migrations.add(model: GroupRole.self, database: .psql)
+    migrations.add(model: UserRight.self, database: .psql)
+    migrations.add(model: UserRole.self, database: .psql)
+    migrations.add(model: UserGroup.self, database: .psql)
+
     migrations.add(model: AccessToken.self, database: .psql)
     migrations.add(model: RefreshToken.self, database: .psql)
     
@@ -79,10 +92,6 @@ public func configure(
     migrations.add(model: WishBookComment.self, database: .psql)
     migrations.add(model: PriceUnit.self, database: .psql)
     migrations.add(model: ChatContent.self, database: .psql)
-    migrations.add(model: Menu.self, database: .psql)
-    migrations.add(model: News.self, database: .psql)
-    migrations.add(model: Role.self, database: .psql)
-    //migrations.add(migration: AddLevelProperty.self, database: .psql)
 
     services.register(migrations)
     try configureWebsockets(&services)
