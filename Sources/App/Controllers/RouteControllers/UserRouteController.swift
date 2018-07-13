@@ -17,7 +17,7 @@ final class UserRouteController: RouteCollection {
         let group = router.grouped("api", "users")
         
         group.post(UserLoginContainer.self, at: "login", use: loginUserHandler)
-        group.post(User.self, at: "register", use: registerUserHandler)
+        group.post(UserRegisterContainer.self, at: "register", use: registerUserHandler)
         /// 修改密码 
         group.post(NewsPasswordContainer.self, at:"newPassword", use: newPassword)
     }
@@ -73,15 +73,20 @@ private extension UserRouteController {
             }
     }
 
-    func registerUserHandler(_ request: Request, newUser: User) throws -> Future<Response> {
+    func registerUserHandler(_ request: Request, container: UserRegisterContainer) throws -> Future<Response> {
         return User
             .query(on: request)
-            .filter(\.email == newUser.email)
+            .filter(\.email == container.email)
             .first()
             .flatMap{ existingUser in
                 guard existingUser == nil else {
                     return try request.makeErrorJson(message: "This email is already registered.")
                 }
+                let newUser = User(name: container.name,
+                                   email: container.email,
+                                   password: container.password,
+                                   organizId: container.organizId)
+                
                 try newUser.validate()
                 return try newUser
                     .user(with: request.make(BCryptDigest.self))

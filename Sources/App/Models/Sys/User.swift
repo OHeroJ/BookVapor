@@ -28,19 +28,19 @@ final class User: Content {
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
     init(name: String,
-         phone: String?,
+         phone: String? = nil,
          email: String,
-         avator: String?,
+         avator: String? = nil,
          password: String,
-        delFlag: Bool = false) {
+         delFlag: Bool = false,
+         organizId: Organization.ID? = nil) {
         self.name = name
         self.phone = phone
         self.email = email
         self.avator = avator
         self.password = password
         self.delFlag = false
-        // TODO
-        self.organizId = 0
+        self.organizId = organizId ?? 0
     }
 }
 
