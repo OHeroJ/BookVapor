@@ -77,7 +77,6 @@ public func configure(
     migrations.add(model: UserRight.self, database: .psql)
     migrations.add(model: UserRole.self, database: .psql)
     migrations.add(model: UserGroup.self, database: .psql)
-
     migrations.add(model: AccessToken.self, database: .psql)
     migrations.add(model: RefreshToken.self, database: .psql)
     

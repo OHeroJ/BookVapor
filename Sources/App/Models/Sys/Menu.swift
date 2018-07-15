@@ -40,8 +40,12 @@ final class Menu: Content {
     }
 }
 
-extension Menu {
-    struct Public: Content {
+
+
+
+extension Menu: ModelResusivable {
+
+    struct Public: ModelPublicable {
         var id: Int?
         var parentId: Menu.ID
         var sort: Int // 第几个位置

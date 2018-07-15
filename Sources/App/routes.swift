@@ -52,4 +52,7 @@ public func routes(_ router: Router) throws {
     let chainController = ChainRouteController()
     try router.register(collection: chainController)
 
+    let defaultRouteController = DefaultRouteController()
+    try router.register(collection: defaultRouteController)
+
 }

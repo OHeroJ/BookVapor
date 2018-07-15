@@ -42,8 +42,8 @@ final class Role: Content {
     }
 }
 
-extension Role {
-    struct Public: Content {
+extension Role: ModelResusivable {
+    struct Public: ModelPublicable {
         var id: Int?
         var delFlag: Bool
         var parentId: Role.ID
