@@ -19,3 +19,10 @@ struct BookCreateContainer: Content {
     var classifyId: BookClassify.ID
     var priceUintId: PriceUnit.ID
 }
+
+struct BookUpdateContainer: Content {
+    var id: Book.ID
+    var price: Double?
+    var detail: String?
+    var convers: [String]?
+}

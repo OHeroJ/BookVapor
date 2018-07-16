@@ -8,7 +8,7 @@
 import Vapor
 import FluentPostgreSQL
 
-/// 组权限表
+/// 组权限表，为了方便多个操作， 该表可能呢不需要
 final class GroupRight: PostgreSQLPivot {
     var id: Int?
     var groupId: Group.ID

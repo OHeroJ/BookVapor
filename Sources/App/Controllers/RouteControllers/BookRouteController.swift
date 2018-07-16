@@ -15,8 +15,11 @@ final class BookRouteController: RouteCollection {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let authGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
-        authGroup.post(BookCreateContainer.self, at:"create", use: createBookHandler)
+        authGroup.post(BookCreateContainer.self, at:"create", use: createBookHandler) // 创建书籍
+        authGroup.post(BookUpdateContainer.self, at:"update", use: updateBookHandler) // 编辑书籍
+
         authGroup.post(Comment.self, at:"comment", use: commentBookHandle)
+
         group.get("list", use: listBooksHandle)
         group.get("comments", use: listCommentsHandle)
     }
@@ -53,6 +56,26 @@ extension BookRouteController {
             .query(on: request)
             .paginate(for: request)
             .makeJsonResponse(on: request)
+    }
+
+    /// 书籍的编辑
+    func updateBookHandler(_ request: Request, container: BookUpdateContainer) throws -> Future<Response> {
+        let user = try request.requireAuthenticated(User.self)
+        guard let userId = user.id, userId == container.id else {
+            return try request.makeErrorJson(message: "这本书不是您的，不能编辑")
+        }
+        return Book
+            .find(container.id, on: request)
+            .flatMap { book in
+                guard let tBook = book else {
+                    return try request.makeErrorJson(message: "书籍不存在")
+                }
+
+                tBook.covers = container.convers ?? tBook.covers
+                tBook.detail = container.detail ?? tBook.detail
+                tBook.price = container.price ?? tBook.price
+                return try tBook.update(on: request).makeJsonResponse(on: request)
+        }
     }
 
     /// 创建书籍

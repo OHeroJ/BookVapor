@@ -28,6 +28,7 @@ final class SysRouteController: RouteCollection {
         roleGroup.get("list", use: getRoleList)
 
         let userGroup = group.grouped("user")
+        userGroup.post(DeleteIDContainer<User>.self, at: "delete", use: deleteUser)
 
         let rightGroup = group.grouped("right")
 
@@ -43,6 +44,19 @@ extension SysRouteController {
 //MARK: - User
 extension SysRouteController {
 
+    func deleteUser(_ request: Request, container: DeleteIDContainer<User>) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return User
+            .find(container.id, on: request)
+            .flatMap { user in
+                guard let tuser = user else {
+                    return try request.makeErrorJson(message: "不存在")
+                }
+                return try tuser
+                    .delete(on: request)
+                    .makeVoidJson(request: request)
+        }
+    }
 }
 
 //MARK: - Role
@@ -104,6 +118,7 @@ extension SysRouteController {
         }
     }
 
+    /// 创建一个菜单代表一个新的功能注入， 那么也需要为其生成一个操作权限
     func createMenu(_ request: Request, menu: Menu) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
         return Menu
@@ -114,6 +129,7 @@ extension SysRouteController {
                 guard exisMenu == nil else {
                     return try request.makeErrorJson(message: "Menu 已经存在")
                 }
+                // menu&role
                 return try menu.create(on: request).makeJsonResponse(on: request)
             }
     }

@@ -17,6 +17,7 @@ final class User: Content {
     var name: String
     var email: String
     var avator: String?
+    var info: String?
     var password: String
     var delFlag: Bool?
     var createdAt: Date?
@@ -33,7 +34,8 @@ final class User: Content {
          avator: String? = nil,
          password: String,
          delFlag: Bool = false,
-         organizId: Organization.ID? = nil) {
+         organizId: Organization.ID? = nil,
+         info: String? = nil) {
         self.name = name
         self.phone = phone
         self.email = email
@@ -41,6 +43,7 @@ final class User: Content {
         self.password = password
         self.delFlag = false
         self.organizId = organizId ?? 0
+        self.info = info ?? "暂无简介"
     }
 }
 
@@ -104,18 +107,20 @@ extension User {
         var email: String
         var avator: String?
         var phone: String?
+        var info: String?
 
-        init(id: Int?, name: String, email: String, avator: String?, phone: String?) {
+        init(id: Int?, name: String, email: String, avator: String?, phone: String?, info: String? = nil) {
             self.id = id
             self.name = name
             self.email = email
             self.avator = avator
             self.phone = phone
+            self.info = info
         }
     }
 
     func convertToPublic() -> Public {
-        return User.Public(id: id, name: name, email: email, avator: avator, phone: phone)
+        return User.Public(id: id, name: name, email: email, avator: avator, phone: phone, info: info)
     }
 }
 

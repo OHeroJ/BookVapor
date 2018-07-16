@@ -8,7 +8,7 @@
 import Vapor
 import FluentPostgreSQL
 
-// 用户权限表
+// 用户权限表， 该表可能不需要 
 final class UserRight: PostgreSQLPivot {
     var id: Int?
     var userId: User.ID
