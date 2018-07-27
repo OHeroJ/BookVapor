@@ -100,7 +100,7 @@ private extension UserRouteController {
         }
 }
 
-extension UserRouteController {
+extension RouteCollection {
     func sendMail(user: User, request: Request) throws -> Future<Void> {
         let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
         let code = ActiveCode(userId: user.id!, code: codeStr)
@@ -132,7 +132,7 @@ extension UserRouteController {
     }
 }
 
-private extension User {
+extension User {
     func user(with digest: BCryptDigest) throws -> User {
         return try User(name: name,
                     phone: phone,
