@@ -8,6 +8,7 @@
 import Vapor
 import FluentPostgreSQL
 import Authentication
+import Pagination
 
 /// 用户表
 final class User: Content {
@@ -131,6 +132,8 @@ extension Future where T: User {
         })
     }
 }
+
+extension User: Paginatable {}
 
 //MARK: BasicAuthenticatable
 extension User: BasicAuthenticatable {

@@ -37,7 +37,6 @@ enum ResponseStatus: Int, Content {
             return "用户不存在"
         case .passwordError:
             return "密码错误"
-
         }
     }
 }

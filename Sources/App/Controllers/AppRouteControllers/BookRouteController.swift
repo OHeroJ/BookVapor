@@ -8,6 +8,7 @@
 import Vapor
 import FluentPostgreSQL
 import Pagination
+import Fluent
 
 final class BookRouteController: RouteCollection {
     func boot(router: Router) throws {
@@ -20,8 +21,12 @@ final class BookRouteController: RouteCollection {
 
         authGroup.post(Comment.self, at:"comment", use: commentBookHandle)
 
+        /// 获取全部书籍
         group.get("list", use: listBooksHandle)
+
+        /// 获取书本的评论
         group.get("comments", use: listCommentsHandle)
+
     }
 }
 
@@ -50,15 +55,29 @@ extension BookRouteController {
         return try comment.create(on: request).makeJsonResponse(on: request)
     }
 
-    /// 首页书籍列表
+    /// 获取书籍列表, page=1&per=10
     func listBooksHandle(_ request: Request) throws -> Future<Response>  {
+        let filters = try request.query.decode(BookListContainer.self)
+        var orderBys:[PostgreSQLOrderBy] = [.orderBy(PostgreSQLExpression.column(PostgreSQLColumnIdentifier.keyPath(\Book.createdAt)), .ascending)]
+
+        switch filters.bType {
+        case .hot:
+            orderBys = [.orderBy(PostgreSQLExpression.column(PostgreSQLColumnIdentifier.keyPath(\Book.commentCount)), .ascending)]
+        case .new:
+            break
+        }
+
         return try Book
             .query(on: request)
-            .paginate(for: request)
+            .filter(\.state ~~ [.putaway, .soldout])
+            .paginate(for: request, orderBys)
+            .map {$0.response()}
             .makeJsonResponse(on: request)
     }
 
-    /// 书籍的编辑
+    
+
+    /// 书籍的编辑， 只有是用户的书籍才能编辑
     func updateBookHandler(_ request: Request, container: BookUpdateContainer) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id, userId == container.id else {

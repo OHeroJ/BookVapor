@@ -10,7 +10,7 @@ import FluentPostgreSQL
 
 final class News: Content {
     var id: Int?
-    var type: Int
+    var type: Int  // 评论，关注，审核，系统通知
     var code: Int
     var message: String
     var title: String

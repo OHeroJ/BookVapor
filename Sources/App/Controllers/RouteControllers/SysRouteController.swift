@@ -9,8 +9,12 @@ import Foundation
 
 import Vapor
 import FluentPostgreSQL
+import Pagination
 
 final class SysRouteController: RouteCollection {
+
+    private let authController = AuthenticationController()
+
     func boot(router: Router) throws {
         let group = router.grouped("api", "sys")
         let guardAuthMiddleware = User.guardAuthMiddleware()
@@ -29,6 +33,8 @@ final class SysRouteController: RouteCollection {
 
         let userGroup = group.grouped("user")
         userGroup.post(DeleteIDContainer<User>.self, at: "delete", use: deleteUser)
+        userGroup.get("page", use: listUser)
+        userGroup.post(UserRegisterContainer.self,  at:"add", use: addUser)
 
         let rightGroup = group.grouped("right")
 
@@ -43,6 +49,40 @@ extension SysRouteController {
 
 //MARK: - User
 extension SysRouteController {
+    func addUser(_ request: Request, container: UserRegisterContainer) throws -> Future<Response> {
+        return User
+            .query(on: request)
+            .filter(\.email == container.email)
+            .first()
+            .flatMap{ existingUser in
+                guard existingUser == nil else {
+                    return try request.makeErrorJson(message: "This email is already registered.")
+                }
+                let newUser = User(name: container.name,
+                                   email: container.email,
+                                   password: container.password,
+                                   organizId: container.organizId)
+
+                try newUser.validate()
+                return try newUser
+                    .user(with: request.make(BCryptDigest.self))
+                    .create(on: request)
+                    .flatMap{ user in
+                        return try self.sendMail(user: user, request: request).transform(to: user)
+                    }.flatMap { user in
+                        return try self.authController.authenticationContainer(for: user, on: request)
+                }
+        }
+    }
+
+    func listUser(_ request: Request) throws -> Future<Response> {
+        return try User
+            .query(on: request)
+            .paginate(for: request)
+            .flatMap{ pages in
+                return try JSONContainer(data: pages).encode(for: request)
+            }
+    }
 
     func deleteUser(_ request: Request, container: DeleteIDContainer<User>) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
