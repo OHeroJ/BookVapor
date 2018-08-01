@@ -21,7 +21,7 @@ protocol ModelResusivable: PostgreSQLModel {
 
 extension RouteCollection {
     func generateModelTree<T>(parentId: T.ID, originArray:[T]) -> [T.Public] where T: ModelResusivable {
-        let firstParents = originArray.filter({ $0.parentId == parentId})
+        let firstParents = originArray.filter({ $0.parentId == parentId && $0.parentId != $0.id })
         let originArr = Array(originArray.drop(while: {$0.parentId == parentId}))
         if (firstParents.count > 0) {
             return firstParents.map { (menu) ->  T.Public in

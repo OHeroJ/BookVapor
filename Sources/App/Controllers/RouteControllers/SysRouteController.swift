@@ -26,17 +26,19 @@ final class SysRouteController: RouteCollection {
         menuGroup.get("list", use: getMenuList)
         menuGroup.post(Menu.self, at:"add", use: createMenu)
         menuGroup.post(DeleteIDContainer<Menu>.self, at:"delete", use: deleteMenu)
+        menuGroup.post(Menu.self, at:"update", use: updateMenu)
 
         let roleGroup = tokenAuthGroup.grouped("role") //
         roleGroup.post(Role.self, at: "add", use: createRole)
         roleGroup.post(DeleteIDContainer<Role>.self, at: "delete", use: deleteRole)
         roleGroup.get("list", use: getRoleList)
+        roleGroup.post(Role.self,at:"update", use: updateRole)
 
         let userGroup = group.grouped("user")
         userGroup.post(DeleteIDContainer<User>.self, at: "delete", use: deleteUser)
         userGroup.get("page", use: listUser)
         userGroup.post(UserRegisterContainer.self,  at:"add", use: addUser)
-
+        
         let rightGroup = group.grouped("right")
 
     }
@@ -102,16 +104,35 @@ extension SysRouteController {
 
 //MARK: - Role
 extension SysRouteController {
+    func updateRole(_ request: Request, container: Role) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return Role
+            .query(on: request)
+            .filter(\.id == container.id)
+            .first()
+            .flatMap { exisRole in
+                guard let role = exisRole else {
+                    return try request.makeErrorJson(message: "不存在")
+                }
+                role.parentId = container.parentId
+                role.name = container.name
+                role.sort = container.sort
+                role.usable = container.usable
+                return try role.update(on: request).makeJsonResponse(on: request)
+        }
+    }
+
     func createRole(_ request: Request, role: Role) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
         return Role
             .query(on: request)
-            .filter(\Role.id == role.id)
+            .filter(\Role.name == role.name)
             .first()
             .flatMap { exisRole in
                 guard exisRole == nil else {
                     return try request.makeErrorJson(message: "Menu 已经存在")
                 }
+                role.id = nil
                 return try role.create(on: request).makeJsonResponse(on: request)
             }
     }
@@ -145,6 +166,26 @@ extension SysRouteController {
 //MARK: - Menu
 extension SysRouteController {
 
+    func updateMenu(_ request: Request, container: Menu) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return Menu
+            .query(on: request)
+            .filter(\.id == container.id)
+            .first()
+            .flatMap { exisMenu in
+                guard let menu = exisMenu else {
+                    return try request.makeErrorJson(message: "不存在")
+                }
+                menu.parentId = container.parentId
+                menu.name = container.name
+                menu.href = container.href
+                menu.sort = container.sort
+                menu.icon = container.icon
+                menu.isShow = container.isShow
+                return try menu.update(on: request).makeJsonResponse(on: request)
+            }
+    }
+
     func deleteMenu(_ request: Request, container: DeleteIDContainer<Menu>) throws -> Future<Response> {
         let _ = try request.requireAuthenticated(User.self)
         return Menu
@@ -170,6 +211,7 @@ extension SysRouteController {
                 guard exisMenu == nil else {
                     return try request.makeErrorJson(message: "Menu 已经存在")
                 }
+                menu.id = nil;
                 // menu&role
                 return try menu.create(on: request).makeJsonResponse(on: request)
             }

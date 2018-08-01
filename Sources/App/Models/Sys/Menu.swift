@@ -40,9 +40,6 @@ final class Menu: Content {
     }
 }
 
-
-
-
 extension Menu: ModelResusivable {
 
     struct Public: ModelPublicable {
