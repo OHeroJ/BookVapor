@@ -30,5 +30,10 @@
 * 消息（推送，系统消息）
 
 
+## 预览
+
+![](https://github.com/OHeroJ/BookCoin/blob/master/slide2.gif)
+
+
 
 
