@@ -7,13 +7,16 @@
 
 import Vapor
 import FluentPostgreSQL
+import Pagination
 
 // 权限表
 final class Right: Content {
     var id: Int?
     var parentId: Right.ID
-    var remarks: String?
+    var remarks: String? // 备注
     var name: String
+    var code: String // 代码
+    var type: String // 类型 菜单 按钮 工能
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -25,10 +28,14 @@ final class Right: Content {
 
     init(parentId: Right.ID,
          remarks:String? = nil,
-         name: String) {
+         name: String,
+         code: String,
+         type: String) {
         self.parentId = parentId
         self.remarks = remarks
         self.name = name
+        self.code = code
+        self.type = type
     }
 }
 
@@ -41,3 +48,6 @@ extension Right: Migration {
         }
     }
 }
+
+extension Right: Paginatable {}
+

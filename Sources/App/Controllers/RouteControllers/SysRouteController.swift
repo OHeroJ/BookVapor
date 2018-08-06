@@ -22,31 +22,95 @@ final class SysRouteController: RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
 
+        /// 菜单管理
         let menuGroup = tokenAuthGroup.grouped("menu")
         menuGroup.get("list", use: getMenuList)
         menuGroup.post(Menu.self, at:"add", use: createMenu)
         menuGroup.post(DeleteIDContainer<Menu>.self, at:"delete", use: deleteMenu)
         menuGroup.post(Menu.self, at:"update", use: updateMenu)
 
+        /// 角色管理
         let roleGroup = tokenAuthGroup.grouped("role") //
         roleGroup.post(Role.self, at: "add", use: createRole)
         roleGroup.post(DeleteIDContainer<Role>.self, at: "delete", use: deleteRole)
         roleGroup.get("list", use: getRoleList)
         roleGroup.post(Role.self,at:"update", use: updateRole)
 
+        /// 用户管理
         let userGroup = group.grouped("user")
         userGroup.post(DeleteIDContainer<User>.self, at: "delete", use: deleteUser)
         userGroup.get("page", use: listUser)
         userGroup.post(UserRegisterContainer.self,  at:"add", use: addUser)
-        
-        let rightGroup = group.grouped("right")
 
+        /// 权限(资源)管理
+        let rightGroup = group.grouped("resource")
+        rightGroup.get("list", use: listRight)
+        rightGroup.post(Right.self,at:"update", use: updateRight)
+        rightGroup.post(Right.self, at:"add", use: addRight)
+        rightGroup.post(DeleteIDContainer<Right>.self, at:"delete", use: deleteRight)
     }
 }
 
 //MARK: - Right
 extension SysRouteController {
 
+    func updateRight(_ request: Request, container: Right) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return Right
+            .query(on: request)
+            .filter(\.id == container.id)
+            .first()
+            .flatMap { exisRight in
+                guard let right = exisRight else {
+                    return try request.makeErrorJson(message: "不存在")
+                }
+                right.parentId = container.parentId
+                right.name = container.name
+                right.remarks = container.remarks
+                right.code = container.code
+                right.type = container.type
+                return try right.update(on: request).makeJsonResponse(on: request)
+        }
+    }
+
+    func addRight(_ request: Request, container: Right) throws -> Future<Response>  {
+        let _ = try request.requireAuthenticated(User.self)
+        return Right
+            .query(on: request)
+            .filter(\Right.name == container.name)
+            .first()
+            .flatMap { exisRole in
+                guard exisRole == nil else {
+                    return try request.makeErrorJson(message: "Menu 已经存在")
+                }
+                container.id = nil
+                return try container.create(on: request).makeJsonResponse(on: request)
+        }
+    }
+
+    func deleteRight(_ request: Request, container: DeleteIDContainer<Right>) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return Right
+            .find(container.id, on: request)
+            .flatMap { user in
+                guard let tuser = user else {
+                    return try request.makeErrorJson(message: "不存在")
+                }
+                return try tuser
+                    .delete(on: request)
+                    .makeVoidJson(request: request)
+        }
+    }
+
+    func listRight(_ request: Request) throws -> Future<Response> {
+        let _ = try request.requireAuthenticated(User.self)
+        return try Right
+            .query(on: request)
+            .paginate(for: request)
+            .flatMap{ pages in
+                return try JSONContainer(data: pages).encode(for: request)
+        }
+    }
 
 }
 

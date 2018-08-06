@@ -24,12 +24,12 @@ extension DefaultRouteController {
         let defaultRole = Role(parentId: 0, sort: 0, name: "客户")
         _ = defaultRole.create(on: request)
 
-        let rootRight = Right(parentId: 0, name: "根")
-        rootRight.id = 0
-        _ = rootRight.create(on: request)
-
-        let defaultRight = Right(parentId: 0, name: "修改")
-        _ = defaultRight.create(on: request)
+//        let rootRight = Right(parentId: 0, name: "根")
+//        rootRight.id = 0
+//        _ = rootRight.create(on: request)
+//
+//        let defaultRight = Right(parentId: 0, name: "修改")
+//        _ = defaultRight.create(on: request)
 
         return try request.makeJson(response:JSONContainer<Empty>.successEmpty)
     }
