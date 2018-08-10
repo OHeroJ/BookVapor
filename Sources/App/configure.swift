@@ -91,13 +91,6 @@ public func configure(
     migrations.add(model: WishBookComment.self, database: .psql)
     migrations.add(model: PriceUnit.self, database: .psql)
     migrations.add(model: ChatContent.self, database: .psql)
-
     services.register(migrations)
-    try configureWebsockets(&services)
 }
 
-func configureWebsockets(_ services: inout Services) throws {
-    let websockets = NIOWebSocketServer.default()
-    try websocketRoutes(websockets)
-    services.register(websockets, as: WebSocketServer.self)
-}
