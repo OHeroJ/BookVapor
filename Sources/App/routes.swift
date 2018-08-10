@@ -49,9 +49,6 @@ public func routes(_ router: Router) throws {
     let newsRouteController = NewsRouteController()
     try router.register(collection: newsRouteController)
 
-    let chainController = ChainRouteController()
-    try router.register(collection: chainController)
-
     let defaultRouteController = DefaultRouteController()
     try router.register(collection: defaultRouteController)
 

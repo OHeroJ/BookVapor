@@ -90,7 +90,6 @@ public func configure(
     migrations.add(model: WishBook.self, database: .psql)
     migrations.add(model: WishBookComment.self, database: .psql)
     migrations.add(model: PriceUnit.self, database: .psql)
-    migrations.add(model: ChatContent.self, database: .psql)
     services.register(migrations)
 }
 
