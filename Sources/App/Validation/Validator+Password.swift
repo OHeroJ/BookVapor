@@ -26,7 +26,6 @@ fileprivate struct PasswordValidator: ValidatorType {
         try lowercaseValidator.validate(s)
         try uppercaseValidator.validate(s)
     }
-    
 }
 
 fileprivate struct ContainsCharacterFromSetValidator: ValidatorType {

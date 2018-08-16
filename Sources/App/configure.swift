@@ -23,7 +23,7 @@ public func configure(
     try services.register(SendGridProvider())
 
     let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0",
-                                               port: 8080)
+                                               port: 8988)
     services.register(serverConfig)
 
 
