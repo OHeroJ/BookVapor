@@ -17,21 +17,19 @@ final class DefaultRouteController: RouteCollection {
 
 extension DefaultRouteController {
     func defaultConfigDb(_ request: Request) throws -> Future<Response> {
-        let rootRole = Role(parentId: 0, sort: 0, name: "根")
-        rootRole.id = 0
-        _ = rootRole.create(on: request)
+        let sysMenu = Menu(sort: 0, name: "系统管理", href: "/sys/menuList", icon: "", isShow: true)
+        let menuMenu = Menu(sort: 0, name: "菜单管理", href: "/sys/menuList", icon: "", isShow: true)
+        let roleMenu = Menu(sort: 0, name: "权限管理", href: "/sys/roleList", icon: "", isShow: true)
+        let userMenu = Menu(sort: 0, name: "用户管理", href: "/sys/userList", icon: "", isShow: true)
+        let sourceMenu = Menu(sort: 0, name: "资源管理", href: "/sys/resource", icon: "", isShow: true)
 
-        let defaultRole = Role(parentId: 0, sort: 0, name: "客户")
-        _ = defaultRole.create(on: request)
+        _ = sysMenu.save(on: request)
+        _ = menuMenu.save(on: request)
+        _ = roleMenu.save(on: request)
+        _ = userMenu.save(on: request)
+        _ = sourceMenu.save(on: request)
 
-//        let rootRight = Right(parentId: 0, name: "根")
-//        rootRight.id = 0
-//        _ = rootRight.create(on: request)
-//
-//        let defaultRight = Right(parentId: 0, name: "修改")
-//        _ = defaultRight.create(on: request)
-
-        return try request.makeJson(response:JSONContainer<Empty>.successEmpty)
+        return try request.makeVoidJson()
     }
 }
 

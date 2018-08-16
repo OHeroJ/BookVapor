@@ -7,7 +7,6 @@
 
 import Vapor
 
-
 enum ResponseStatus: Int, Content {
     case ok = 0
     case error = 1
@@ -104,6 +103,10 @@ extension Request {
 
     func makeErrorJson(message: String) throws -> Future<Response> {
         return try JSONContainer<Empty>.error(message: message).encode(for: self)
+    }
+
+    func makeVoidJson() throws -> Future<Response> {
+        return try JSONContainer<Empty>(data: nil).encode(for: self)
     }
 }
 

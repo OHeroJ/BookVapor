@@ -59,7 +59,6 @@ public func configure(
 
     var databases = DatabasesConfig()
     databases.add(database: PostgreSQLDatabase(config: psqlConfig), as: .psql)
-    databases.enableLogging(on: .psql)
     services.register(databases)
 
     var migrations = MigrationConfig()

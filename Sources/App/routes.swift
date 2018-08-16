@@ -21,7 +21,6 @@ public func routes(_ router: Router) throws {
 
     router.post("test", use: handleTestPost)
 
-
     let authRouteController = AuthenticationRouteController()
     try router.register(collection: authRouteController)
 

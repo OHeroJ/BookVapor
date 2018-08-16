@@ -138,7 +138,7 @@ extension User {
                     phone: phone,
                     email: email,
                     avator: avator,
-                    password: digest.hash(password))
+                    password: digest.hash(password), organizId: 1)
     }
 }
 
