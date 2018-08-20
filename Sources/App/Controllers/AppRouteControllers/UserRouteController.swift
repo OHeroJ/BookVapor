@@ -8,7 +8,7 @@
 import Vapor
 import Crypto
 import FluentPostgreSQL
-import SendGrid
+
 
 final class UserRouteController: RouteCollection {
     private let authController = AuthenticationController()
@@ -65,10 +65,11 @@ private extension UserRouteController {
                         user.password = container.password
                         return try user.user(with: request.make(BCryptDigest.self))
                             .save(on: request)
-                            .flatMap { user in
-                                // 异步
-                                return try self.sendMail(user: user, request: request).transform(to: user)
-                            }.makeJsonResponse(on: request)
+//                            .flatMap { user in
+//                                // 异步
+////                                return try self.sendMail(user: user, request: request).transform(to: user)
+//                            }
+                            .makeJsonResponse(on: request)
                     }
             }
     }
@@ -91,9 +92,10 @@ private extension UserRouteController {
                 return try newUser
                     .user(with: request.make(BCryptDigest.self))
                     .create(on: request)
-                    .flatMap{ user in
-                        return try self.sendMail(user: user, request: request).transform(to: user)
-                    }.flatMap { user in
+//                    .flatMap{ user in
+//                        return try self.sendMail(user: user, request: request).transform(to: user)
+//                    }
+                    .flatMap { user in
                         return try self.authController.authenticationContainer(for: user, on: request)
                     }
             }
@@ -101,6 +103,7 @@ private extension UserRouteController {
 }
 
 extension RouteCollection {
+    /*
     func sendMail(user: User, request: Request) throws -> Future<Void> {
         let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
         let code = ActiveCode(userId: user.id!, code: codeStr)
@@ -129,7 +132,7 @@ extension RouteCollection {
             }
             return promise.futureResult
         }
-    }
+    }*/
 }
 
 extension User {

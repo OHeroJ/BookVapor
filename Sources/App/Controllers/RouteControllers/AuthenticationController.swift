@@ -10,7 +10,6 @@ import Fluent
 import FluentPostgreSQL
 import Crypto
 
-import SendGrid
 
 final class AuthenticationController {
 

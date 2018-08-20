@@ -20,6 +20,42 @@
         }
       },
       {
+        "package": "Cryptor",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueCryptor.git",
+        "state": {
+          "branch": null,
+          "revision": "30b6cf38322838d1e973e0626c6abf9602b03cf5",
+          "version": "1.0.9"
+        }
+      },
+      {
+        "package": "Socket",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
+        "state": {
+          "branch": null,
+          "revision": "15ff39f95e0b56058cf050c910c1e26002d01f71",
+          "version": "1.0.15"
+        }
+      },
+      {
+        "package": "SSLService",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
+        "state": {
+          "branch": null,
+          "revision": "e29d5112fb5958327f537a6420d292922f3587dc",
+          "version": "1.0.15"
+        }
+      },
+      {
+        "package": "CommonCrypto",
+        "repositoryURL": "https://github.com/IBM-Swift/CommonCrypto.git",
+        "state": {
+          "branch": null,
+          "revision": "9156d238dbc4c15455b77b45e721b2bb0b995e31",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "Console",
         "repositoryURL": "https://github.com/vapor/console.git",
         "state": {
@@ -92,6 +128,15 @@
         }
       },
       {
+        "package": "LoggerAPI",
+        "repositoryURL": "https://github.com/IBM-Swift/LoggerAPI.git",
+        "state": {
+          "branch": null,
+          "revision": "5041f2673aa75d6e973d9b6bd3956bc5068387c8",
+          "version": "1.7.3"
+        }
+      },
+      {
         "package": "Multipart",
         "repositoryURL": "https://github.com/vapor/multipart.git",
         "state": {
@@ -125,15 +170,6 @@
           "branch": null,
           "revision": "3219e328491b0853b8554c5a694add344d2c6cfb",
           "version": "3.0.1"
-        }
-      },
-      {
-        "package": "SendGrid",
-        "repositoryURL": "https://github.com/vapor-community/sendgrid-provider.git",
-        "state": {
-          "branch": null,
-          "revision": "3b71cae7ed953a128a7bb0381b80b31bc7f1d8e5",
-          "version": "3.0.5"
         }
       },
       {
@@ -197,6 +233,15 @@
           "branch": null,
           "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
           "version": "1.0.0"
+        }
+      },
+      {
+        "package": "SwiftSMTP",
+        "repositoryURL": "https://github.com/IBM-Swift/Swift-SMTP",
+        "state": {
+          "branch": null,
+          "revision": "496f779a073991609cf3745214e49449d9b5db24",
+          "version": "5.1.0"
         }
       },
       {

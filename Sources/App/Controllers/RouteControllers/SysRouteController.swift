@@ -134,9 +134,10 @@ extension SysRouteController {
                 return try newUser
                     .user(with: request.make(BCryptDigest.self))
                     .create(on: request)
-                    .flatMap{ user in
-                        return try self.sendMail(user: user, request: request).transform(to: user)
-                    }.flatMap { user in
+//                    .flatMap{ user in
+//                        return try self.sendMail(user: user, request: request).transform(to: user)
+//                    }
+                    .flatMap { user in
                         return try self.authController.authenticationContainer(for: user, on: request)
                 }
         }

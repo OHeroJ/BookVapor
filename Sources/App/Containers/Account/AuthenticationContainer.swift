@@ -17,7 +17,7 @@ struct AuthenticationContainer: Content {
     //MARK: Initializers
     init(accessToken: AccessToken, refreshToken: RefreshToken) {
         self.accessToken = accessToken.token
-        self.expiresIn = AccessToken.Const.expirationInterval //Not honored, just an estimate
+        self.expiresIn = accessToken.expiryTime.timeIntervalSince1970 //Not honored, just an estimate
         self.refreshToken = refreshToken.token
     }
 

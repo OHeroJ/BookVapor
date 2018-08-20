@@ -8,6 +8,15 @@ public func routes(_ router: Router) throws {
         return "welcome"
     }
 
+
+//    router.grouped("abc").get(any) { request in
+//        return "hello, \(request.http.url.path)"
+//    }
+
+    router.get("senderEmail") { request in
+        return try EmailSender.sendEmail(request).transform(to: HTTPStatus.ok)
+    }
+
     router.get("scheme") { request in
         return request
             .http

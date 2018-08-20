@@ -15,6 +15,8 @@ final class User: Content {
     var id: Int?
     var organizId: Organization.ID
     var phone: String?
+    var wechat: String? // 微信账号
+    var qq: String? // qq 账号
     var name: String
     var email: String
     var avator: String?
@@ -109,19 +111,23 @@ extension User {
         var avator: String?
         var phone: String?
         var info: String?
+        var qq: String?
+        var wechat: String?
 
-        init(id: Int?, name: String, email: String, avator: String?, phone: String?, info: String? = nil) {
+        init(id: Int?, name: String, email: String, avator: String?, phone: String?, info: String? = nil, qq: String? = nil, wechat: String? = nil) {
             self.id = id
             self.name = name
             self.email = email
             self.avator = avator
             self.phone = phone
             self.info = info
+            self.qq = qq
+            self.wechat = wechat
         }
     }
 
     func convertToPublic() -> Public {
-        return User.Public(id: id, name: name, email: email, avator: avator, phone: phone, info: info)
+        return User.Public(id: id, name: name, email: email, avator: avator, phone: phone, info: info, qq: qq, wechat: wechat)
     }
 }
 
