@@ -92,9 +92,9 @@ private extension UserRouteController {
                 return try newUser
                     .user(with: request.make(BCryptDigest.self))
                     .create(on: request)
-//                    .flatMap{ user in
-//                        return try self.sendMail(user: user, request: request).transform(to: user)
-//                    }
+                    .flatMap{ user in
+                        return try self.sendMail(user: user, request: request).transform(to: user)
+                    }
                     .flatMap { user in
                         return try self.authController.authenticationContainer(for: user, on: request)
                     }
@@ -103,6 +103,23 @@ private extension UserRouteController {
 }
 
 extension RouteCollection {
+
+    func sendMail(user: User, request: Request) throws -> Future<Void> {
+        let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
+        let code = ActiveCode(userId: user.id!, code: codeStr)
+
+        return code.save(on: request)
+            .flatMap{ code  in
+                let scheme =  request.http.headers.firstValue(name: .host) ?? ""
+                let linkUrl = "https://\(scheme)/api/users/activate/\(code.code)"
+                let emailContent = EmailSender.Content.accountActive(emailTo: user.email, url: linkUrl)
+                return try self.sendMail(request: request, content: emailContent)
+            }
+    }
+
+    func sendMail(request: Request, content: EmailSender.Content) throws -> Future<Void> {
+        return try EmailSender.sendEmail(request, content: content)
+    }
     /*
     func sendMail(user: User, request: Request) throws -> Future<Void> {
         let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
@@ -117,6 +134,8 @@ extension RouteCollection {
 
             let sendGridClient = try request.make(SendGridClient.self)
             let subject = "subjuect"
+
+     
             let body = "body: 点击此链接激活\(url)"
             let from = EmailAddress(email: "oheroj@gmail.com", name: "twicebook")
             let address = EmailAddress(email: user.email, name: user.email)
