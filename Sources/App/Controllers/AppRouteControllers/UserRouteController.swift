@@ -9,7 +9,6 @@ import Vapor
 import Crypto
 import FluentPostgreSQL
 
-
 final class UserRouteController: RouteCollection {
     private let authController = AuthenticationController()
 
@@ -100,58 +99,6 @@ private extension UserRouteController {
                     }
             }
         }
-}
-
-extension RouteCollection {
-
-    func sendMail(user: User, request: Request) throws -> Future<Void> {
-        let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
-        let code = ActiveCode(userId: user.id!, code: codeStr)
-
-        return code.save(on: request)
-            .flatMap{ code  in
-                let scheme =  request.http.headers.firstValue(name: .host) ?? ""
-                let linkUrl = "https://\(scheme)/api/users/activate/\(code.code)"
-                let emailContent = EmailSender.Content.accountActive(emailTo: user.email, url: linkUrl)
-                return try self.sendMail(request: request, content: emailContent)
-            }
-    }
-
-    func sendMail(request: Request, content: EmailSender.Content) throws -> Future<Void> {
-        return try EmailSender.sendEmail(request, content: content)
-    }
-    /*
-    func sendMail(user: User, request: Request) throws -> Future<Void> {
-        let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
-        let code = ActiveCode(userId: user.id!, code: codeStr)
-        return code
-            .save(on: request)
-            .flatMap(to: Void.self) { (code)  in
-
-            let promise = request.eventLoop.newPromise(Void.self)
-            let scheme =  request.http.headers.firstValue(name: .host) ?? ""
-            let url = "https://\(scheme)/api/users/activate/\(code.code)"
-
-            let sendGridClient = try request.make(SendGridClient.self)
-            let subject = "subjuect"
-
-     
-            let body = "body: 点击此链接激活\(url)"
-            let from = EmailAddress(email: "oheroj@gmail.com", name: "twicebook")
-            let address = EmailAddress(email: user.email, name: user.email)
-            let header = Personalization(to: [address], subject: subject)
-            let email = SendGridEmail(personalizations: [header], from: from, subject: subject, content: [[
-                "type": "text",
-                "value": body
-            ]])
-
-            DispatchQueue.global().async {
-                let _ = try? sendGridClient.send([email], on: request)
-                promise.succeed()
-            }
-            return promise.futureResult
-        }
-    }*/
 }
 
 extension User {
