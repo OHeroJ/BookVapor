@@ -18,9 +18,8 @@ final class BookRouteController: RouteCollection {
         let authGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
         authGroup.post(BookCreateContainer.self, at:"create", use: createBookHandler) // 创建书籍
         authGroup.post(BookUpdateContainer.self, at:"update", use: updateBookHandler) // 编辑书籍
-
-        authGroup.post(Comment.self, at:"comment", use: commentBookHandle)
-
+        authGroup.post(Comment.self, at:"comment", use: commentBookHandle)  // 评论
+        authGroup.post(BookCheckContainer.self, at:"check", use: checkBookHandle) // 书籍审核
         /// 获取全部书籍
         group.get("list", use: listBooksHandle)
 
@@ -31,6 +30,24 @@ final class BookRouteController: RouteCollection {
 }
 
 extension BookRouteController {
+
+    /// 书籍审核
+    func checkBookHandle(_ request: Request, container: BookCheckContainer) throws -> Future<Response> {
+        // 审核成功与失败需要给到消息系统
+        let user = try request.requireAuthenticated(User.self)
+        return try Book
+            .find(container.id, on: request)
+            .flatMap { book in
+                guard let existBook = book else {
+                    return try request.makeErrorJson(message: "书籍不存在")
+
+                }
+
+                existBook.state = container.state
+                return try existBook.update(on: request).makeJsonResponse(on: request)
+        }
+    }
+
 
     /// 评论列表
     func listCommentsHandle(_ request: Request) throws -> Future<Response> {
@@ -75,7 +92,6 @@ extension BookRouteController {
             .makeJsonResponse(on: request)
     }
 
-    
 
     /// 书籍的编辑， 只有是用户的书籍才能编辑
     func updateBookHandler(_ request: Request, container: BookUpdateContainer) throws -> Future<Response> {
@@ -89,7 +105,6 @@ extension BookRouteController {
                 guard let tBook = book else {
                     return try request.makeErrorJson(message: "书籍不存在")
                 }
-
                 tBook.covers = container.convers ?? tBook.covers
                 tBook.detail = container.detail ?? tBook.detail
                 tBook.price = container.price ?? tBook.price
@@ -118,7 +133,9 @@ extension BookRouteController {
                         createId: userId,
                         classifyId: container.classifyId,
                         priceUintId: container.priceUintId)
-        return try book.create(on:request).makeJsonResponse(on: request)
+        return try book
+            .create(on:request)
+            .makeJsonResponse(on: request)
     }
 }
 

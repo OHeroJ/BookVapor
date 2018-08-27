@@ -15,16 +15,16 @@ final class NewsRouteController: RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
 
-        tokenAuthGroup.get("list", use: listNews)
+//        tokenAuthGroup.get("list", use: listNews)
 //        tokenAuthGroup.get("newer", use: hasNewerNews)
     }
 }
 
 extension NewsRouteController {
 
-    func listNews(_ request: Request) throws -> Future<Response> {
-        return try News.query(on: request).all().makeJsonResponse(on: request)
-    }
+//    func listNews(_ request: Request) throws -> Future<Response> {
+//        return try News.query(on: request).all().makeJsonResponse(on: request)
+//    }
 
 //    func hasNewerNews(_ request: Request) throws -> Future<Response> {
 //        return try News.query(on: request).all()

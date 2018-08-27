@@ -58,7 +58,6 @@ public func configure(
     migrations.add(model: Organization.self, database: .psql)
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: Menu.self, database: .psql)
-    migrations.add(model: News.self, database: .psql)
     migrations.add(model: Role.self, database: .psql)
     migrations.add(model: OpLog.self, database: .psql)
     migrations.add(model: Right.self, database: .psql)
@@ -82,6 +81,10 @@ public func configure(
     migrations.add(model: WishBook.self, database: .psql)
     migrations.add(model: WishBookComment.self, database: .psql)
     migrations.add(model: PriceUnit.self, database: .psql)
+
+    migrations.add(model: Notify.self, database: .psql)
+    migrations.add(model: UserNotify.self, database: .psql)
+    migrations.add(model: Subscription.self, database: .psql)
     services.register(migrations)
 }
 

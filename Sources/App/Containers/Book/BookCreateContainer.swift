@@ -26,3 +26,9 @@ struct BookUpdateContainer: Content {
     var detail: String?
     var convers: [String]?
 }
+
+struct BookCheckContainer: Content {
+    var id: Book.ID
+    var state: Book.State
+    var remarks: String // 审核的标注
+}
