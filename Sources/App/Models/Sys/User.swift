@@ -59,29 +59,6 @@ extension User: Migration {
         }
     }
 }
-// 添加字段
-/*
-struct AddLevelProperty: Migration {
-    typealias Database = PostgreSQLDatabase
-    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
-        return Database.update(User.self, on: connection) { builder in
-            builder.field(for: \.permissionLevel)
-        }
-    }
-    static func revert(on conn: PostgreSQLConnection) -> Future<Void> {
-        return Database.update(User.self, on: conn) { builder in
-            builder.deleteField(for: \.permissionLevel)
-        }
-    }
-}
-*/
-
-// router.get("users", User.parameter) { req -> String in
-//     // ....
-// }
-// extension User: Parameter {}
-
-
 
 extension User {
     var publishedBooks: Children<User, Book> { // 发布的书

@@ -44,6 +44,10 @@ public func configure(
     middlewares.use(CORSMiddleware(configuration: corsConfig))
     services.register(middlewares)
 
+    var commandConfig = CommandConfig.default()
+    commandConfig.useFluentCommands()
+    services.register(commandConfig)
+
     let psqlConfig = PostgreSQLDatabaseConfig(hostname: "localhost",
                                               port: 5432,
                                               username: "root",
