@@ -12,7 +12,14 @@ let package = Package(
         .package(url: "https://github.com/skelpo/APIErrorMiddleware.git", from: "0.3.5")
     ],
     targets: [
-        .target(name: "App", dependencies: ["Vapor", "Authentication", "SwiftSMTP", "Pagination", "FluentPostgreSQL", "APIErrorMiddleware"]),
+        .target(name: "App", dependencies: [
+            "Vapor",
+            "Authentication",
+            "SwiftSMTP",
+            "Pagination",
+            "FluentPostgreSQL",
+            "APIErrorMiddleware"
+        ]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])
     ]
