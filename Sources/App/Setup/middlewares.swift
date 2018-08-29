@@ -9,11 +9,11 @@ import Vapor
 import Authentication
 import APIErrorMiddleware
 
-public func middlewares(config: inout MiddlewareConfig) throws {
-//    config.use(APIErrorMiddleware.init(environment: env, specializations: [
-//        ModelNotFound()
-//        ]))
-    
+public func middlewares(config: inout MiddlewareConfig, env: inout Environment) throws {
+
+    config.use(APIErrorMiddleware.init(environment: env, specializations: [
+        ModelNotFound()
+    ]))
 
     let corsConfig = CORSMiddleware.Configuration(
         allowedOrigin: .originBased,

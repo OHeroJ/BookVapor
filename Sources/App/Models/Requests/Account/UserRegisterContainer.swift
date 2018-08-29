@@ -4,10 +4,6 @@
 //
 //  Created by laijihua on 2018/7/13.
 //
-
-import Foundation
-
-
 import Vapor
 
 struct UserRegisterContainer: Content {

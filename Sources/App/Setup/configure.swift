@@ -17,14 +17,13 @@ public func configure(
     try services.register(FluentPostgreSQLProvider())
     try services.register(AuthenticationProvider())
 
-
     let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0",
                                                port: 8988)
     services.register(serverConfig)
-    /// 配置全局的 middleware
 
+    /// 配置全局的 middleware
     var middlewaresConfig = MiddlewareConfig()
-    try middlewares(config: &middlewaresConfig)
+    try middlewares(config: &middlewaresConfig, env:&env)
     services.register(middlewaresConfig)
 
     var commandConfig = CommandConfig.default()
