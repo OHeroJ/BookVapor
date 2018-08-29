@@ -7,6 +7,7 @@
 
 import Vapor
 import FluentPostgreSQL
+import Pagination
 
 final class Notify: Content {
     var id: Int?
@@ -15,7 +16,7 @@ final class Notify: Content {
     var target: Int?
     var targetType: String?
     var action: String?
-    var sender: User.ID?
+    var senderId: User.ID?
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -34,11 +35,32 @@ final class Notify: Content {
         self.target = target
         self.targetType = targetType
         self.action = action
-        self.sender = sender
+        self.senderId = sender
         self.content = content
     }
 }
 
+extension Notify {
+    static var announce: Int {return 1}
+    static var remind: Int {return 2}
+    static var message: Int {return 3}
+
+    static var targetTypes: [String] {
+        return ["topic", "reply", "comment"]
+    }
+
+    static var actionTypes: [String] {
+        return ["like", "collect", "comment"]
+    }
+}
+
+extension Notify {
+    var userNotifis: Children<Notify,UserNotify> {
+        return children(\UserNotify.notifyId)
+    }
+}
+
+extension Notify: Paginatable {}
 extension Notify: Migration {}
 extension Notify: PostgreSQLModel {}
 

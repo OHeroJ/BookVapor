@@ -3,6 +3,14 @@
     
 </center>
 
+## 环境
+
+* Vapor3
+* Swift4.1
+
+## 项目规范
+
+* [规范](https://github.com/vapor-community/styleguide)
 
 ## 功能
 

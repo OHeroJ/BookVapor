@@ -12,6 +12,7 @@ final class Subscription: Content {
     var target: Int
     var targetType: String
     var userId: User.ID
+    var action: String
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -20,10 +21,11 @@ final class Subscription: Content {
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
-    init(target: Int, targetType: String, userId: User.ID) {
+    init(target: Int, targetType: String, userId: User.ID, action: String) {
         self.target = target
         self.targetType = targetType
         self.userId = userId
+        self.action = action
     }
 }
 
