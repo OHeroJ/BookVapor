@@ -14,7 +14,7 @@ import Pagination
 
 final class SysRouteController: RouteCollection {
 
-    private let authController = AuthenticationController()
+    private let authController = AuthenticationService()
 
     func boot(router: Router) throws {
         let group = router.grouped("api", "sys")

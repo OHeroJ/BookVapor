@@ -13,7 +13,7 @@ import Pagination
 /// 用户表
 final class User: Content {
     var id: Int?
-    var organizId: Organization.ID
+    var organizId: Organization.ID  // 公司
     var phone: String?
     var wechat: String? // 微信账号
     var qq: String? // qq 账号

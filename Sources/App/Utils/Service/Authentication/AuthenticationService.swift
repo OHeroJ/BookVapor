@@ -11,7 +11,7 @@ import FluentPostgreSQL
 import Crypto
 
 
-final class AuthenticationController {
+final class AuthenticationService {
 
     //MARK: Actions
     func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: Request) throws -> Future<Response> {
@@ -47,7 +47,7 @@ final class AuthenticationController {
 }
 
 //MARK: Helper
-private extension AuthenticationController {
+private extension AuthenticationService {
 
     //MARK: Queries
     func existingUser(matchingTokenString tokenString: RefreshToken.Token, on connection: DatabaseConnectable) throws -> Future<User?> {

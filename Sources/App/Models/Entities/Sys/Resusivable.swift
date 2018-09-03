@@ -15,7 +15,6 @@ protocol ModelPublicable: Content {
 protocol ModelResusivable: PostgreSQLModel {
     associatedtype Public: ModelPublicable
     var parentId:Self.ID {get}
-
     func convertToPublic(childrens: [Public]) -> Public
 }
 

@@ -9,7 +9,6 @@ import Vapor
 import FluentPostgreSQL
 
 /// 角色表
-
 final class Role: Content {
     var id: Int?
     var delFlag: Bool

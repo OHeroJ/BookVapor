@@ -15,7 +15,7 @@ import Authentication
 
 final class AuthenticationRouteController: RouteCollection {
 
-    private let authController = AuthenticationController()
+    private let authController = AuthenticationService()
 
     func boot(router: Router) throws {
         let group = router.grouped("api", "token")

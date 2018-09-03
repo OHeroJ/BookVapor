@@ -10,7 +10,7 @@ import Crypto
 import FluentPostgreSQL
 
 final class UserRouteController: RouteCollection {
-    private let authController = AuthenticationController()
+    private let authController = AuthenticationService()
 
     func boot(router: Router) throws {
         let group = router.grouped("api", "users")
