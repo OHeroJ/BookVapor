@@ -15,13 +15,12 @@ import Authentication
 
 final class AuthenticationRouteController: RouteCollection {
 
-    private let authController = AuthenticationService()
+    private let authService = AuthenticationService()
 
     func boot(router: Router) throws {
         let group = router.grouped("api", "token")
         group.post(RefreshTokenContainer.self, at: "refresh", use: refreshAccessTokenHandler)
-
-        let basicAuthMiddleware = User.basicAuthMiddleware(using: BCrypt)
+        let basicAuthMiddleware = UserAuth.basicAuthMiddleware(using: BCrypt)
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let basicAuthGroup = group.grouped([basicAuthMiddleware, guardAuthMiddleware])
         basicAuthGroup.post(UserEmailContainer.self, at: "revoke", use: accessTokenRevocationhandler)
@@ -31,10 +30,10 @@ final class AuthenticationRouteController: RouteCollection {
 //MARK: Helper
 extension AuthenticationRouteController {
     func refreshAccessTokenHandler(_ request: Request, container: RefreshTokenContainer) throws -> Future<Response> {
-        return try authController.authenticationContainer(for: container.refreshToken, on: request)
+        return try authService.authenticationContainer(for: container.refreshToken, on: request)
     }
 
     func accessTokenRevocationhandler(_ request: Request, container: UserEmailContainer) throws -> Future<HTTPResponseStatus> {
-        return try authController.revokeTokens(forEmail: container.email, on: request).transform(to: .noContent)
+        return try authService.revokeTokens(forEmail: container.email, on: request).transform(to: .noContent)
     }
 }

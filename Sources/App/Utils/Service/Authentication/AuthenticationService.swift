@@ -17,16 +17,16 @@ final class AuthenticationService {
     func authenticationContainer(for refreshToken: RefreshToken.Token, on connection: Request) throws -> Future<Response> {
         return try existingUser(matchingTokenString: refreshToken, on: connection).flatMap { user in
             guard let user = user else { return try connection.makeErrorJson(message: "用户不存在")}
-            return try self.authenticationContainer(for: user, on: connection)
+            return try self.authenticationContainer(for: user.requireID(), on: connection)
         }
     }
 
-    func authenticationContainer(for user: User, on connection: Request) throws -> Future<Response> {
-        return try removeAllTokens(for: user, on: connection)
+    func authenticationContainer(for userId: User.ID, on connection: Request) throws -> Future<Response> {
+        return try removeAllTokens(for: userId, on: connection)
             .flatMap { _ in
             return try map(to: AuthenticationContainer.self,
-                           self.accessToken(for: user, on: connection),
-                           self.refreshToken(for: user, on: connection)) { access, refresh in
+                           self.accessToken(for: userId, on: connection),
+                           self.refreshToken(for: userId, on: connection)) { access, refresh in
                 return AuthenticationContainer(accessToken: access, refreshToken: refresh)
                 }.flatMap { (author)  in
                     return try JSONContainer.init(data: author).encode(for: connection)
@@ -41,7 +41,7 @@ final class AuthenticationService {
             .first()
             .flatMap { user in
             guard let user = user else { return Future.map(on: connection) { Void() } }
-            return try self.removeAllTokens(for: user, on: connection)
+            return try self.removeAllTokens(for: user.requireID(), on: connection)
         }
     }
 }
@@ -73,8 +73,8 @@ private extension AuthenticationService {
     }
 
     //MARK: Cleanup
-    func removeAllTokens(for user: User, on connection: DatabaseConnectable) throws -> Future<Void> {
-        guard let userId = user.id else { throw Abort(.notFound) }
+    func removeAllTokens(for userId: User.ID?, on connection: DatabaseConnectable) throws -> Future<Void> {
+        guard let userId = userId else { throw Abort(.notFound) }
 
         let accessTokens = AccessToken
             .query(on: connection)
@@ -90,13 +90,13 @@ private extension AuthenticationService {
     }
 
     //MARK: Generation
-    func accessToken(for user: User, on connection: DatabaseConnectable) throws -> Future<AccessToken> {
-        return try AccessToken(userId: user.requireID())
+    func accessToken(for userId: User.ID, on connection: DatabaseConnectable) throws -> Future<AccessToken> {
+        return try AccessToken(userId: userId)
             .save(on: connection)
     }
 
-    func refreshToken(for user: User, on connection: DatabaseConnectable) throws -> Future<RefreshToken> {
-        return try RefreshToken(userId: user.requireID())
+    func refreshToken(for userId: User.ID, on connection: DatabaseConnectable) throws -> Future<RefreshToken> {
+        return try RefreshToken(userId: userId)
             .save(on: connection)
     }
 

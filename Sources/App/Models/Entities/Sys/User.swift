@@ -14,19 +14,18 @@ import Pagination
 final class User: Content {
     var id: Int?
     var organizId: Organization.ID  // 公司
-    var phone: String?
-    var wechat: String? // 微信账号
-    var qq: String? // qq 账号
     var name: String
     var email: String
     var avator: String?
-    var info: String?
-    var password: String
-    var delFlag: Bool?
+    var info: String? // 简介
+
+    var phone: String?
+    var wechat: String? // 微信账号
+    var qq: String? // qq 账号
+
     var createdAt: Date?
     var updatedAt: Date?
     var deletedAt: Date?
-
     static var createdAtKey: TimestampKey? { return \.createdAt }
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
@@ -35,16 +34,12 @@ final class User: Content {
          phone: String? = nil,
          email: String,
          avator: String? = nil,
-         password: String,
-         delFlag: Bool = false,
          organizId: Organization.ID? = nil,
          info: String? = nil) {
         self.name = name
         self.phone = phone
         self.email = email
         self.avator = avator
-        self.password = password
-        self.delFlag = false
         self.organizId = organizId ?? 0
         self.info = info ?? "暂无简介"
     }
@@ -118,23 +113,9 @@ extension Future where T: User {
 
 extension User: Paginatable {}
 
-//MARK: BasicAuthenticatable
-extension User: BasicAuthenticatable {
-    static var usernameKey: WritableKeyPath<User, String> = \.email
-    static var passwordKey: WritableKeyPath<User, String> = \.password
-}
 
 //MARK: TOkenAuthenticatable
 extension User: TokenAuthenticatable {
     typealias TokenType = AccessToken
 }
 
-//MARK: Validatable
-extension User: Validatable {
-    static func validations() throws -> Validations<User> {
-        var validations = Validations(User.self)
-        try validations.add(\.email, .email)
-        try validations.add(\.password, .password)
-        return validations
-    }
-}

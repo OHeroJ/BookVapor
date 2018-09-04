@@ -8,7 +8,7 @@
 
 import Vapor
 
-struct UserLoginContainer: Content {
+struct EmailLoginContainer: Content {
     let email: String
     let password: String
 }

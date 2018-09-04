@@ -10,12 +10,12 @@ import Crypto
 import FluentPostgreSQL
 
 final class UserRouteController: RouteCollection {
-    private let authController = AuthenticationService()
+    private let authService = AuthenticationService()
 
     func boot(router: Router) throws {
         let group = router.grouped("api", "users")
         
-        group.post(UserLoginContainer.self, at: "login", use: loginUserHandler)
+        group.post(EmailLoginContainer.self, at: "login", use: loginUserHandler)
         group.post(UserRegisterContainer.self, at: "register", use: registerUserHandler)
         /// 修改密码 
         group.post(NewsPasswordContainer.self, at:"newPassword", use: newPassword)
@@ -24,90 +24,108 @@ final class UserRouteController: RouteCollection {
 
 //MARK: Helper
 private extension UserRouteController {
-    func loginUserHandler(_ request: Request, user: UserLoginContainer) throws -> Future<Response> {
-        return User
+    func loginUserHandler(_ request: Request, container: EmailLoginContainer) throws -> Future<Response> {
+        return UserAuth
             .query(on: request)
-            .filter(\.email == user.email)
+            .filter(\UserAuth.identityType == UserAuth.AuthType.email.rawValue)
+            .filter(\UserAuth.identifier == container.email)
             .first()
-            .flatMap { existingUser in
-                guard let existingUser = existingUser else {
+            .flatMap { existingAuth in
+                guard let existingAuth = existingAuth else {
                     return try request.makeJson(response: JSONContainer<Empty>.error(status: .userNotExist))
                 }
                 let digest = try request.make(BCryptDigest.self)
-                guard try digest.verify(user.password, created: existingUser.password) else {
+                guard try digest.verify(container.password, created: existingAuth.credential) else {
                     return try request.makeErrorJson(message: "认证失败")
                 }
-                return try self.authController.authenticationContainer(for: existingUser, on: request)
+                return try self.authService.authenticationContainer(for: existingAuth.userId, on: request)
             }
     }
 
     // TODO: send email has some error , wait 
     func newPassword(_ request: Request, container: NewsPasswordContainer) throws -> Future<Response> {
 
-        return User
+        return UserAuth
             .query(on: request)
-            .filter(\.email == container.email)
+            .filter(\UserAuth.identityType == UserAuth.AuthType.email.rawValue)
+            .filter(\UserAuth.identifier == container.email)
             .first()
-            .flatMap{ user in
-                guard let user = user else {
+            .flatMap{ userAuth in
+                guard let userAuth = userAuth else {
                     return try request.makeErrorJson(message: "No user found with email '\(container.email)'.")
                 }
-                return try user
-                    .codes
+
+                return userAuth
+                    .user
                     .query(on: request)
                     .first()
-                    .flatMap { code in
-                        // 只有激活的用户才可以修改密码
-                        guard let code = code, code.state else {
-                            return try request.makeErrorJson(message: "User not activated.")
+                    .flatMap { user in
+                        guard let user = user else {
+                            return try request.makeErrorJson(message: "No user found with email '\(container.email)'.")
                         }
-                        user.password = container.password
-                        return try user.user(with: request.make(BCryptDigest.self))
-                            .save(on: request)
-//                            .flatMap { user in
-//                                // 异步
-////                                return try self.sendMail(user: user, request: request).transform(to: user)
-//                            }
-                            .makeJsonResponse(on: request)
+                        return try user
+                            .codes
+                            .query(on: request)
+                            .first()
+                            .flatMap { code in
+                                // 只有激活的用户才可以修改密码
+                                guard let code = code, code.state else {
+                                    return try request.makeErrorJson(message: "邮箱未激活")
+                                }
+                                var tmpUserAuth = userAuth
+                                tmpUserAuth.credential = container.password
+                                return try tmpUserAuth
+                                    .userAuth(with: request.make(BCryptDigest.self))
+                                    .save(on: request)
+                                    .map(to: Void.self, {_ in return })
+                                    //                            .flatMap { user in
+                                    //                                // 异步
+                                    ////                                return try self.sendMail(user: user, request: request).transform(to: user)
+                                    //                            }
+                                    .makeVoidJson(request: request)
+                        }
                     }
+
             }
     }
 
     func registerUserHandler(_ request: Request, container: UserRegisterContainer) throws -> Future<Response> {
-        return User
+        return UserAuth
             .query(on: request)
-            .filter(\.email == container.email)
+            .filter(\.identityType == UserAuth.AuthType.email.rawValue)
+            .filter(\.identifier == container.email)
             .first()
-            .flatMap{ existingUser in
-                guard existingUser == nil else {
+            .flatMap{ existAuth in
+                guard existAuth == nil else {
                     return try request.makeErrorJson(message: "This email is already registered.")
                 }
+
+                var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
+                try userAuth.validate()
                 let newUser = User(name: container.name,
                                    email: container.email,
-                                   password: container.password,
                                    organizId: container.organizId)
-                
-                try newUser.validate()
-                return try newUser
-                    .user(with: request.make(BCryptDigest.self))
+
+                return newUser
                     .create(on: request)
-                    .flatMap{ user in
-                        return try self.sendMail(user: user, request: request).transform(to: user)
-                    }
                     .flatMap { user in
-                        return try self.authController.authenticationContainer(for: user, on: request)
+                        userAuth.userId = try user.requireID()
+                        return try userAuth
+                            .userAuth(with: request.make(BCryptDigest.self))
+                            .create(on: request)
+                            .flatMap { _ in
+                                return try self.sendMail(user: user, request: request)
+                            }.flatMap { _ in
+                                return try self.authService.authenticationContainer(for: user.requireID(), on: request)
+                            }
                     }
             }
         }
 }
 
-extension User {
-    func user(with digest: BCryptDigest) throws -> User {
-        return try User(name: name,
-                    phone: phone,
-                    email: email,
-                    avator: avator,
-                    password: digest.hash(password), organizId: 1)
+extension UserAuth {
+    func userAuth(with digest: BCryptDigest) throws -> UserAuth {
+        return try UserAuth(userId: userId, identityType: .type(identityType), identifier: identityType, credential: digest.hash(credential))
     }
 }
 

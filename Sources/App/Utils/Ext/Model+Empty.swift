@@ -6,3 +6,7 @@
 //
 
 import Vapor
+
+public extension Future where Expectation: OptionalType {
+
+}

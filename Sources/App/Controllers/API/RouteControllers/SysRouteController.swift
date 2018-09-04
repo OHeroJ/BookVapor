@@ -14,7 +14,7 @@ import Pagination
 
 final class SysRouteController: RouteCollection {
 
-    private let authController = AuthenticationService()
+    private let authService = AuthenticationService()
 
     func boot(router: Router) throws {
         let group = router.grouped("api", "sys")
@@ -117,28 +117,34 @@ extension SysRouteController {
 //MARK: - User
 extension SysRouteController {
     func addUser(_ request: Request, container: UserRegisterContainer) throws -> Future<Response> {
-        return User
+        return UserAuth
             .query(on: request)
-            .filter(\.email == container.email)
+            .filter(\.identityType == UserAuth.AuthType.email.rawValue)
+            .filter(\.identifier == container.email)
             .first()
-            .flatMap{ existingUser in
-                guard existingUser == nil else {
+            .flatMap{ existAuth in
+                guard existAuth == nil else {
                     return try request.makeErrorJson(message: "This email is already registered.")
                 }
+
+                var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
+                try userAuth.validate()
                 let newUser = User(name: container.name,
                                    email: container.email,
-                                   password: container.password,
                                    organizId: container.organizId)
 
-                try newUser.validate()
-                return try newUser
-                    .user(with: request.make(BCryptDigest.self))
+                return newUser
                     .create(on: request)
-//                    .flatMap{ user in
-//                        return try self.sendMail(user: user, request: request).transform(to: user)
-//                    }
                     .flatMap { user in
-                        return try self.authController.authenticationContainer(for: user, on: request)
+                        userAuth.userId = try user.requireID()
+                        return try userAuth
+                            .userAuth(with: request.make(BCryptDigest.self))
+                            .create(on: request)
+                            .flatMap { _ in
+                                return try self.sendMail(user: user, request: request)
+                            }.flatMap { _ in
+                                return try self.authService.authenticationContainer(for: user.requireID(), on: request)
+                        }
                 }
         }
     }
