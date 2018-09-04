@@ -99,13 +99,11 @@ private extension UserRouteController {
                 guard existAuth == nil else {
                     return try request.makeErrorJson(message: "This email is already registered.")
                 }
-
                 var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
                 try userAuth.validate()
                 let newUser = User(name: container.name,
                                    email: container.email,
                                    organizId: container.organizId)
-
                 return newUser
                     .create(on: request)
                     .flatMap { user in
@@ -125,7 +123,7 @@ private extension UserRouteController {
 
 extension UserAuth {
     func userAuth(with digest: BCryptDigest) throws -> UserAuth {
-        return try UserAuth(userId: userId, identityType: .type(identityType), identifier: identityType, credential: digest.hash(credential))
+        return try UserAuth(userId: userId, identityType: .type(identityType), identifier: identifier, credential: digest.hash(credential))
     }
 }
 

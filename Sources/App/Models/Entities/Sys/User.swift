@@ -40,7 +40,7 @@ final class User: Content {
         self.phone = phone
         self.email = email
         self.avator = avator
-        self.organizId = organizId ?? 0
+        self.organizId = organizId ?? 1
         self.info = info ?? "暂无简介"
     }
 }
