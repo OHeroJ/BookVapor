@@ -37,6 +37,7 @@ public func migrate(migrations: inout MigrationConfig) throws {
     migrations.add(model: Notify.self, database: .psql)
     migrations.add(model: UserNotify.self, database: .psql)
     migrations.add(model: Subscription.self, database: .psql)
+    migrations.add(model: UserAuth.self, database: .psql)
 
     // Populate
     migrations.add(migration: PopulateOrganizationForms.self, database: .psql)
