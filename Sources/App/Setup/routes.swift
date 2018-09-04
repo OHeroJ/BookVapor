@@ -19,8 +19,8 @@ public func routes(_ router: Router) throws {
             .firstValue(name: HTTPHeaderName.host) ?? ""
     }
 
-    func handleTestPost(_ request: Request) throws -> Future<User.Public> {
-        return try request.content.decode(User.self).convertToPublic()
+    func handleTestPost(_ request: Request) throws -> Future<User> {
+        return try request.content.decode(User.self)
     }
 
     router.post("test", use: handleTestPost)

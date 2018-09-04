@@ -31,7 +31,6 @@ private extension ProtectedRoutesController {
     func basicAuthRouteHandler(_ request: Request) throws -> Future<Response> {
         let user =  try request
             .requireAuthenticated(User.self)
-            .convertToPublic()
         return try request.makeJson(response: JSONContainer(data: user))
     }
 
@@ -39,7 +38,6 @@ private extension ProtectedRoutesController {
     func tokenAuthRouteHandler(_ request: Request) throws -> Future<Response> {
         let user =  try request
             .requireAuthenticated(User.self)
-            .convertToPublic()
         return try request.makeJson(response: JSONContainer(data: user))
     }
 }
