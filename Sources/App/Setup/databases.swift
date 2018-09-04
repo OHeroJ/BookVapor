@@ -7,10 +7,12 @@
 
 import Vapor
 import FluentPostgreSQL
+import Authentication
 
-public func databases(config: inout DatabasesConfig) throws {
-    
-    
+public func databases(config: inout DatabasesConfig, services: inout Services) throws {
+
+    try services.register(FluentPostgreSQLProvider())
+    try services.register(AuthenticationProvider())
 
     let psqlConfig = PostgreSQLDatabaseConfig(hostname: "localhost",
                                               port: 5432,

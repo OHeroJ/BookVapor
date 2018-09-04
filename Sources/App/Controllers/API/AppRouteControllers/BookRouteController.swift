@@ -34,15 +34,14 @@ extension BookRouteController {
     /// 书籍审核
     func checkBookHandle(_ request: Request, container: BookCheckContainer) throws -> Future<Response> {
         // 审核成功与失败需要给到消息系统
-        let user = try request.requireAuthenticated(User.self)
-        return try Book
+        let _ = try request.requireAuthenticated(User.self)
+        return Book
             .find(container.id, on: request)
             .flatMap { book in
                 guard let existBook = book else {
                     return try request.makeErrorJson(message: "书籍不存在")
 
                 }
-
                 existBook.state = container.state
                 return try existBook.update(on: request).makeJsonResponse(on: request)
         }
@@ -96,7 +95,8 @@ extension BookRouteController {
     /// 书籍的编辑， 只有是用户的书籍才能编辑
     func updateBookHandler(_ request: Request, container: BookUpdateContainer) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
-        guard let userId = user.id, userId == container.id else {
+        guard let userId = user.id,
+            userId == container.id else {
             return try request.makeErrorJson(message: "这本书不是您的，不能编辑")
         }
         return Book

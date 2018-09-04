@@ -40,4 +40,5 @@ public func migrate(migrations: inout MigrationConfig) throws {
 
     // Populate
     migrations.add(migration: PopulateOrganizationForms.self, database: .psql)
+    migrations.add(migration: PopulateMenuForms.self, database: .psql)
 }

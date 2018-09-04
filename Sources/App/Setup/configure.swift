@@ -1,7 +1,6 @@
 
 import Vapor
 import FluentPostgreSQL
-import Authentication
 /// Called before your application initializes.
 ///
 /// https://docs.vapor.codes/3.0/getting-started/structure/#configureswift
@@ -13,9 +12,6 @@ public func configure(
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
-
-    try services.register(FluentPostgreSQLProvider())
-    try services.register(AuthenticationProvider())
 
     let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0",
                                                port: 8988)
@@ -36,7 +32,7 @@ public func configure(
     services.register(contentConfig)
 
     var databasesConfig = DatabasesConfig()
-    try databases(config: &databasesConfig)
+    try databases(config: &databasesConfig, services: &services)
     services.register(databasesConfig)
 
     services.register { (container) -> MigrationConfig in

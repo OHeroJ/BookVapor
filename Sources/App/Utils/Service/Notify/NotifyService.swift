@@ -7,6 +7,7 @@
 
 import Foundation
 import Vapor
+
 import Fluent
 import FluentPostgreSQL
 import Pagination
@@ -52,7 +53,8 @@ final class NotifyService {
             .sort(\UserNotify.createdAt, .descending)
             .first()
             .flatMap { usernoti in
-                guard let existUsernoti = usernoti, let lastTime = existUsernoti.createdAt else {
+                guard let existUsernoti = usernoti,
+                    let lastTime = existUsernoti.createdAt else {
                     return try request.makeVoidJson()
                 }
 
@@ -111,6 +113,7 @@ final class NotifyService {
             }
     }
 
+
     /// 通过reason，查询reasonAction，获取对应的动作组:actions
     /// 遍历动作组，每一个动作新建一则Subscription记录
     func subscribe(user: User.ID, target: Int, targetType: String, reason: String, on reqeust: Request) throws -> Future<Response>{
@@ -149,16 +152,19 @@ final class NotifyService {
     func getUserNotify(userId: User.ID, on reqeust: Request) throws -> Future<Response>{
         return try UserNotify
             .query(on: reqeust)
-//            .join(\Notify.id, to: \UserNotify.notifyId)
             .filter(\UserNotify.userId == userId)
+            .sort(\UserNotify.createdAt)
             .paginate(for: reqeust)
-//            .alsoDecode(Notify.self)
-            .map { $0.response() }
             .makeJsonResponse(on: reqeust)
     }
 
     /// 更新指定的notify，把isRead属性设置为true
-    func read(user: User, notifyIds:[Notify.ID], on reqeust: Request) {
-
+    func read(user: User, notifyIds:[Notify.ID], on reqeust: Request) throws -> Future<Void>{
+        return UserNotify
+            .query(on: reqeust)
+            .filter(\UserNotify.notifyId ~~ notifyIds)
+            .update(\UserNotify.isRead, to: true)
+            .all()
+            .map(to: Void.self, { _ in Void()})
     }
 }

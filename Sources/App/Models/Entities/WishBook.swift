@@ -15,6 +15,7 @@ final class WishBook: Content {
     var content: String  //> 评论内容
     var userId: User.ID
     var commentCount: Int //> 评论数
+    var photos: [String] // 上传的图片数组
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -24,11 +25,12 @@ final class WishBook: Content {
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
-    init(title: String, content: String, userId: User.ID, commentCount: Int = 0) {
+    init(title: String, content: String, userId: User.ID, commentCount: Int = 0, photos:[String] = []) {
         self.title = title
         self.content = content
         self.userId = userId
         self.commentCount = commentCount
+        self.photos = photos
     }
 }
 

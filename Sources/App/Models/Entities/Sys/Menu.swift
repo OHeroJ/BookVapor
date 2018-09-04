@@ -76,7 +76,7 @@ extension Menu: Migration {
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
-            builder.reference(from: \.parentId, to: \Menu.id)
+//            builder.reference(from: \.parentId, to: \Menu.id)
         }
     }
 }
