@@ -59,10 +59,10 @@ extension UserAuth: PostgreSQLModel {}
 extension UserAuth: Migration {}
 
 extension UserAuth: Validatable {
+    /// 只针对 email 的校验
     static func validations() throws -> Validations<UserAuth> {
-        /// TODO: 分类型
         var validations = Validations(UserAuth.self)
-        try validations.add(\.identityType, .email)
+        try validations.add(\.identifier, .email)
         try validations.add(\.credential, .password)
         return validations
     }
