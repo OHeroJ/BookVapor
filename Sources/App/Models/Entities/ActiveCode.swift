@@ -9,12 +9,12 @@ import Vapor
 import FluentPostgreSQL
 
 /// 邮箱验证码
-
 final class ActiveCode: Content {
     var id: Int?
     var userId: User.ID
-    var state: Bool // 是否激活
+    var state: Bool // 是否激活, 使用过
     var code: String
+    var codeType: String // 验证码类型
 
     var createdAt: Date?
     var updatedAt: Date?
@@ -24,10 +24,20 @@ final class ActiveCode: Content {
     static var updatedAtKey: TimestampKey? { return \.updatedAt }
     static var deletedAtKey: TimestampKey? { return \.deletedAt }
 
-    init(userId: User.ID, code: String) {
+    init(userId: User.ID, code: String, type: CodeType, state: Bool = false) {
         self.userId = userId
         self.code = code
-        self.state = false
+        self.state = state
+        self.codeType = type.rawValue
+    }
+}
+
+extension ActiveCode {
+
+    /// 验证码类型
+    enum CodeType: String {
+        case changePwd = "changePwd"  // 修改密码的时候的邮件验证码
+        case activeAccount = "activeAccount" // 判断用户注册的邮箱是否激活过
     }
 }
 

@@ -9,14 +9,14 @@ import Vapor
 import Crypto
 
 extension RouteCollection {
-    func sendMail(user: User, request: Request) throws -> Future<Void> {
+    func sendRegisteMail(user: User, request: Request) throws -> Future<Void> {
+        let userId = try user.requireID()
         let codeStr = try MD5.hash(Data(Date().description.utf8)).hexEncodedString().lowercased()
-        let code = ActiveCode(userId: user.id!, code: codeStr)
-
+        let code = ActiveCode(userId: userId, code: codeStr, type: ActiveCode.CodeType.activeAccount)
         return code.save(on: request)
             .flatMap{ code  in
                 let scheme =  request.http.headers.firstValue(name: .host) ?? ""
-                let linkUrl = "https://\(scheme)/api/users/activate/\(code.code)"
+                let linkUrl = "https://\(scheme)/api/users/activate?userId=\(userId)&code=\(code.code)"
                 let emailContent = EmailSender.Content.accountActive(emailTo: user.email, url: linkUrl)
                 return try self.sendMail(request: request, content: emailContent)
         }

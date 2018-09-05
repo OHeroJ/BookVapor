@@ -11,4 +11,5 @@ struct NewsPasswordContainer: Content {
     let email: String
     let password: String
     let newPassword: String
+    let code: String
 }
