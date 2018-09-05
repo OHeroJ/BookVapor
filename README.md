@@ -16,7 +16,7 @@
 
 ## 功能
 
-* 用户注册、登入、密码找回
+* 用户注册、登入、密码找回, 适用于第三方登录
 * 角色管理
 * 权限管理
 * 用户管理
@@ -42,6 +42,18 @@ createuser root -P  # 创建一个用户，密码 lai12345
 createdb book -O root -E UTF8 -e # 创建数据库
 ```
 
+### vapor fetch 问题
+
+如果在 vapor fetch 的时候很慢，建议先运行 vapor clean, 然后执行 vapor run 如果你想看进度的话。可以
+
+```
+vapor clean 
+vapor run 
+ls -all    #看是否有.build 目录
+cd .build  
+du -sh *  # 这里就可以进行看.build 文件的大小的变化
+```
+
 
 ## 预览
 
@@ -49,21 +61,20 @@ createdb book -O root -E UTF8 -e # 创建数据库
 
 1. 环境配置
 
-1.1 数据库配置
+    1.1 数据库配置
 
-```
-brew install postgresql  # 安装 psql
-createuser root -P lai12345  # 创建数据库用户
-createdb book -O root -E UTF8 -e # 创建数据库
-``` 
+    ```
+    brew install postgresql  # 安装 psql
+    createuser root -P lai12345  # 创建数据库用户
+    createdb book -O root -E UTF8 -e # 创建数据库
+    ``` 
 
-1.2 运行 vapor
+    1.2 运行 vapor
 
-```
-brew install vapor/tap/vapor
-vapor run 
-```
-
+    ```
+    brew install vapor/tap/vapor
+    vapor run 
+    ```
 
 2. 下载 demo 
 

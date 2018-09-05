@@ -9,7 +9,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/auth.git", from: "2.0.0"),
         .package(url: "https://github.com/vapor-community/pagination.git", from: "1.0.6"),
         .package(url: "https://github.com/IBM-Swift/Swift-SMTP", .upToNextMinor(from: "5.1.0")),
-        .package(url: "https://github.com/skelpo/APIErrorMiddleware.git", from: "0.3.5")
+        .package(url: "https://github.com/skelpo/APIErrorMiddleware.git", from: "0.3.5"),
+        .package(url: "https://github.com/robrix/Either", "2.0.1" ..< "3.0.0")
     ],
     targets: [
         .target(name: "App", dependencies: [
