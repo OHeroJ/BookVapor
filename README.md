@@ -48,7 +48,7 @@ createdb book -O root -E UTF8 -e # 创建数据库
 
 ```
 vapor clean 
-vapor run 
+vapor fetch 
 ls -all    #看是否有.build 目录
 cd .build  
 du -sh *  # 这里就可以进行看.build 文件的大小的变化
