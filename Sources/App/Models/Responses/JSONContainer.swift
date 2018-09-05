@@ -79,37 +79,53 @@ struct JSONContainer<D: Content>: Content {
     }
 }
 
-extension Future where T: Content{
-    func makeJsonResponse(on request: Request) throws -> Future<Response> {
+extension Future where T: Content {
+    func makeJson(on request: Request) throws -> Future<Response> {
         return try self.map { data in
             return JSONContainer(data: data)
-        }.encode(for: request)
-    }
-
-    func makeErrorJsonResponse(status: ResponseStatus, message: String? = nil, request: Request) throws -> Future<Response> {
-        return try self.map { data in
-            return JSONContainer<Empty>(status: status, message: message ?? status.desc, data: nil)
         }.encode(for: request)
     }
 }
 
 extension Future where T == Void {
-    func makeVoidJson(request: Request) throws -> Future<Response> {
+    func makeJson(request: Request) throws -> Future<Response> {
         return try self.transform(to: JSONContainer<Empty>.successEmpty).encode(for: request)
     }
 }
 
+extension Future where T == Either<Content, Content> {
+    func makeJson(on request: Request) throws -> Future<Response>  {
+        return try self.makeJson(on: request)
+    }
+}
+
 extension Request {
+    /// data json
     func makeJson<C>(response: JSONContainer<C>) throws -> Future<Response> {
         return try response.encode(for: self)
     }
 
-    func makeErrorJson(message: String) throws -> Future<Response> {
+    /// error json
+    func makeJson(error message: String) throws -> Future<Response> {
         return try JSONContainer<Empty>.error(message: message).encode(for: self)
     }
 
-    func makeVoidJson() throws -> Future<Response> {
+    /// Void json
+    func makeJson() throws -> Future<Response> {
         return try JSONContainer<Empty>(data: nil).encode(for: self)
+    }
+}
+
+
+
+extension Either where T: Content, U: Content {
+    func makeJson(on request: Request) throws -> Future<Response> {
+        switch self {
+        case let .left(x):
+            return try JSONContainer<Left>(data: x).encode(for: request)
+        case let .right(x):
+            return try JSONContainer<Right>(data: x).encode(for: request)
+        }
     }
 }
 

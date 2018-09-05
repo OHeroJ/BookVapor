@@ -17,13 +17,13 @@ final class NotifyService {
     /// 往Notify表中插入一条公告记录
     func createAnnouce(content: String, sender: User.ID, on reqeust: Request) throws -> Future<Response> {
         let notify = Notify(type: Notify.announce, target: nil, targetType: nil, action: nil, sender: sender, content: content)
-        return try notify.create(on: reqeust).makeJsonResponse(on: reqeust)
+        return try notify.create(on: reqeust).makeJson(on: reqeust)
     }
 
     /// 往Notify表中插入一条提醒记录
     func createRemind(target: Int, targetType: String, action: String, sender: User.ID, content: String, on reqeust: Request) throws -> Future<Response> {
         let notify = Notify(type: Notify.remind, target: target, targetType: targetType, action: action, sender: sender, content: content)
-        return try notify.create(on: reqeust).makeJsonResponse(on: reqeust)
+        return try notify.create(on: reqeust).makeJson(on: reqeust)
     }
 
     /// 往Notify表中插入一条信息记录
@@ -34,7 +34,7 @@ final class NotifyService {
             .create(on: reqeust)
             .flatMap { (noti) in
                 guard let notid = noti.id else {
-                    return try reqeust.makeErrorJson(message: "noti id 不存在")
+                    return try reqeust.makeJson(error: "noti id 不存在")
                 }
                 let userNotify = UserNotify(userId: sender, notifyId: notid, notifyType: noti.type)
                 let _ = userNotify.create(on: reqeust)
@@ -55,7 +55,7 @@ final class NotifyService {
             .flatMap { usernoti in
                 guard let existUsernoti = usernoti,
                     let lastTime = existUsernoti.createdAt else {
-                    return try request.makeVoidJson()
+                    return try request.makeJson()
                 }
 
                 return Notify
@@ -106,7 +106,7 @@ final class NotifyService {
                             let userNoti = UserNotify(userId: userId, notifyId: notiyId, notifyType: notify.type)
                             let _ = userNoti.create(on: request)
                         })
-                        return try request.makeVoidJson()
+                        return try request.makeJson()
                     }
                 })
                 return try request.makeJson(response: JSONContainer<[Notify]>.init(data: notifyArr))
@@ -121,12 +121,12 @@ final class NotifyService {
             "create_topic": ["like", "comment"],
             "like_replay": ["comment"]
         ]
-        guard let actions = reasonAction[reason] else {return try reqeust.makeErrorJson(message: "不存在reason")}
+        guard let actions = reasonAction[reason] else {return try reqeust.makeJson(error: "不存在reason")}
         actions.forEach { action in
             let subscribe = Subscription(target: target, targetType: targetType, userId: user, action: action)
             let _ = subscribe.create(on: reqeust).map(to: Void.self, { _ in return})
         }
-        return try reqeust.makeVoidJson()
+        return try reqeust.makeJson()
     }
 
     //// 删除user、target、targetType对应的一则或多则记录
@@ -136,7 +136,7 @@ final class NotifyService {
             .filter(\.target == target)
             .filter(\.targetType == targetType)
             .delete()
-            .makeVoidJson(request: reqeust)
+            .makeJson(request: reqeust)
     }
 
     //// 查询SubscriptionConfig表，获取用户的订阅配置
@@ -144,7 +144,7 @@ final class NotifyService {
         return try Subscription.query(on: reqeust)
             .filter(\.userId == userId)
             .all()
-            .makeJsonResponse(on: reqeust)
+            .makeJson(on: reqeust)
 
     }
 
@@ -155,7 +155,7 @@ final class NotifyService {
             .filter(\UserNotify.userId == userId)
             .sort(\UserNotify.createdAt)
             .paginate(for: reqeust)
-            .makeJsonResponse(on: reqeust)
+            .makeJson(on: reqeust)
     }
 
     /// 更新指定的notify，把isRead属性设置为true

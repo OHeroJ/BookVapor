@@ -39,11 +39,11 @@ extension BookRouteController {
             .find(container.id, on: request)
             .flatMap { book in
                 guard let existBook = book else {
-                    return try request.makeErrorJson(message: "书籍不存在")
+                    return try request.makeJson(error: "书籍不存在")
 
                 }
                 existBook.state = container.state
-                return try existBook.update(on: request).makeJsonResponse(on: request)
+                return try existBook.update(on: request).makeJson(on: request)
         }
     }
 
@@ -64,11 +64,11 @@ extension BookRouteController {
     func commentBookHandle(_ request: Request, container: Comment) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id , userId == container.userId else {
-            return try request.makeErrorJson(message: "用户不存在")
+            return try request.makeJson(error: "用户不存在")
         }
         let comment = Comment(bookId: container.bookId, userId: userId, content: container.content)
         // TODO: 推送 + 消息
-        return try comment.create(on: request).makeJsonResponse(on: request)
+        return try comment.create(on: request).makeJson(on: request)
     }
 
     /// 获取书籍列表, page=1&per=10
@@ -88,7 +88,7 @@ extension BookRouteController {
             .filter(\.state ~~ [.putaway, .soldout])
             .paginate(for: request, orderBys)
             .map {$0.response()}
-            .makeJsonResponse(on: request)
+            .makeJson(on: request)
     }
 
 
@@ -97,18 +97,18 @@ extension BookRouteController {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id,
             userId == container.id else {
-            return try request.makeErrorJson(message: "这本书不是您的，不能编辑")
+            return try request.makeJson(error: "这本书不是您的，不能编辑")
         }
         return Book
             .find(container.id, on: request)
             .flatMap { book in
                 guard let tBook = book else {
-                    return try request.makeErrorJson(message: "书籍不存在")
+                    return try request.makeJson(error: "书籍不存在")
                 }
                 tBook.covers = container.convers ?? tBook.covers
                 tBook.detail = container.detail ?? tBook.detail
                 tBook.price = container.price ?? tBook.price
-                return try tBook.update(on: request).makeJsonResponse(on: request)
+                return try tBook.update(on: request).makeJson(on: request)
         }
     }
 
@@ -116,7 +116,7 @@ extension BookRouteController {
     func createBookHandler(_ request: Request, container: BookCreateContainer) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id else {
-            return try request.makeErrorJson(message: "认证失败")
+            return try request.makeJson(error: "认证失败")
         }
         let book = Book(isbn: container.isbn,
                         name: container.name,
@@ -135,7 +135,7 @@ extension BookRouteController {
                         priceUintId: container.priceUintId)
         return try book
             .create(on:request)
-            .makeJsonResponse(on: request)
+            .makeJson(on: request)
     }
 }
 

@@ -48,7 +48,7 @@ private extension UserRouteController {
                 return try code
                     .save(on: request)
                     .map(to: Void.self, {_ in return })
-                    .makeVoidJson(request: request)
+                    .makeJson(request: request)
             }
     }
 
@@ -71,7 +71,7 @@ private extension UserRouteController {
                     .flatMap {acode in
                         let content = EmailSender.Content.changePwd(emailTo: container.email, code: codeStr)
                         return try self.sendMail(request: request, content: content)
-                    }.makeVoidJson(request: request)
+                    }.makeJson(request: request)
             }
 
     }
@@ -88,7 +88,7 @@ private extension UserRouteController {
                 }
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(container.password, created: existingAuth.credential) else {
-                    return try request.makeErrorJson(message: "认证失败")
+                    return try request.makeJson(error: "认证失败")
                 }
                 return try self.authService.authenticationContainer(for: existingAuth.userId, on: request)
             }
@@ -104,7 +104,7 @@ private extension UserRouteController {
             .first()
             .flatMap{ userAuth in
                 guard let userAuth = userAuth else {
-                    return try request.makeErrorJson(message: "No user found with email '\(container.email)'.")
+                    return try request.makeJson(error: "No user found with email '\(container.email)'.")
                 }
 
                 return userAuth
@@ -113,7 +113,7 @@ private extension UserRouteController {
                     .first()
                     .flatMap { user in
                         guard let user = user else {
-                            return try request.makeErrorJson(message: "No user found with email '\(container.email)'.")
+                            return try request.makeJson(error: "No user found with email '\(container.email)'.")
                         }
                         return try user
                             .codes
@@ -124,7 +124,7 @@ private extension UserRouteController {
                             .flatMap { code in
                                 // 只有激活的用户才可以修改密码
                                 guard let code = code, code.state else {
-                                    return try request.makeErrorJson(message: "验证码错误")
+                                    return try request.makeJson(error: "验证码错误")
                                 }
                                 var tmpUserAuth = userAuth
                                 tmpUserAuth.credential = container.password
@@ -132,7 +132,7 @@ private extension UserRouteController {
                                     .userAuth(with: request.make(BCryptDigest.self))
                                     .save(on: request)
                                     .map(to: Void.self, {_ in return })
-                                    .makeVoidJson(request: request)
+                                    .makeJson(request: request)
                         }
                     }
 
@@ -147,7 +147,7 @@ private extension UserRouteController {
             .first()
             .flatMap{ existAuth in
                 guard existAuth == nil else {
-                    return try request.makeErrorJson(message: "This email is already registered.")
+                    return try request.makeJson(error: "This email is already registered.")
                 }
                 var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
                 try userAuth.validate()

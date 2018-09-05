@@ -26,7 +26,7 @@ final class WishBookRouteController: RouteCollection {
 extension WishBookRouteController {
 
     func commnetWishBook(_ request: Request, container: WishBookComment) throws -> Future<Response> {
-        return try container.create(on: request).makeJsonResponse(on: request)
+        return try container.create(on: request).makeJson(on: request)
     }
 
     func createWishBook(_ request: Request, container: WishBookCreateContainer) throws -> Future<Response> {
@@ -34,7 +34,7 @@ extension WishBookRouteController {
                                 content: container.content,
                                 userId: container.userId,
                                 commentCount: 0)
-        return try wishBook.save(on: request).makeJsonResponse(on: request)
+        return try wishBook.save(on: request).makeJson(on: request)
     }
 
 }

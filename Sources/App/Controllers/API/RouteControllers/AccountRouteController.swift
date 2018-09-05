@@ -29,7 +29,7 @@ extension AccountRouteController {
         user.phone = container.phone ?? user.phone
         user.organizId = container.organizId ?? user.organizId
         user.info = container.info ?? user.info
-        return try user.update(on: request).makeJsonResponse(on: request)
+        return try user.update(on: request).makeJson(on: request)
     }
 
     func getAcccountInfo(_ request: Request) throws -> Future<Response> {

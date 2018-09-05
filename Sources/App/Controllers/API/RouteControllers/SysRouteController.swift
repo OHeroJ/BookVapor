@@ -62,14 +62,14 @@ extension SysRouteController {
             .first()
             .flatMap { exisRight in
                 guard let right = exisRight else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 right.parentId = container.parentId
                 right.name = container.name
                 right.remarks = container.remarks
                 right.code = container.code
                 right.type = container.type
-                return try right.update(on: request).makeJsonResponse(on: request)
+                return try right.update(on: request).makeJson(on: request)
         }
     }
 
@@ -81,10 +81,10 @@ extension SysRouteController {
             .first()
             .flatMap { exisRole in
                 guard exisRole == nil else {
-                    return try request.makeErrorJson(message: "Menu 已经存在")
+                    return try request.makeJson(error: "Menu 已经存在")
                 }
                 container.id = nil
-                return try container.create(on: request).makeJsonResponse(on: request)
+                return try container.create(on: request).makeJson(on: request)
         }
     }
 
@@ -94,11 +94,11 @@ extension SysRouteController {
             .find(container.id, on: request)
             .flatMap { user in
                 guard let tuser = user else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 return try tuser
                     .delete(on: request)
-                    .makeVoidJson(request: request)
+                    .makeJson(request: request)
         }
     }
 
@@ -124,7 +124,7 @@ extension SysRouteController {
             .first()
             .flatMap{ existAuth in
                 guard existAuth == nil else {
-                    return try request.makeErrorJson(message: "This email is already registered.")
+                    return try request.makeJson(error: "This email is already registered.")
                 }
 
                 var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
@@ -164,11 +164,11 @@ extension SysRouteController {
             .find(container.id, on: request)
             .flatMap { user in
                 guard let tuser = user else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 return try tuser
                     .delete(on: request)
-                    .makeVoidJson(request: request)
+                    .makeJson(request: request)
         }
     }
 }
@@ -183,13 +183,13 @@ extension SysRouteController {
             .first()
             .flatMap { exisRole in
                 guard let role = exisRole else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 role.parentId = container.parentId
                 role.name = container.name
                 role.sort = container.sort
                 role.usable = container.usable
-                return try role.update(on: request).makeJsonResponse(on: request)
+                return try role.update(on: request).makeJson(on: request)
         }
     }
 
@@ -201,10 +201,10 @@ extension SysRouteController {
             .first()
             .flatMap { exisRole in
                 guard exisRole == nil else {
-                    return try request.makeErrorJson(message: "Menu 已经存在")
+                    return try request.makeJson(error: "Menu 已经存在")
                 }
                 role.id = nil
-                return try role.create(on: request).makeJsonResponse(on: request)
+                return try role.create(on: request).makeJson(on: request)
             }
     }
 
@@ -214,11 +214,11 @@ extension SysRouteController {
             .find(container.id, on: request)
             .flatMap { role in
                 guard let trole = role else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 return try trole
                     .delete(on: request)
-                    .makeVoidJson(request: request)
+                    .makeJson(request: request)
         }
     }
 
@@ -229,7 +229,7 @@ extension SysRouteController {
             .all()
             .map{ roles in
                 return self.generateModelTree(parentId: 0, originArray: roles)
-            }.makeJsonResponse(on: request)
+            }.makeJson(on: request)
     }
 
 }
@@ -245,7 +245,7 @@ extension SysRouteController {
             .first()
             .flatMap { exisMenu in
                 guard let menu = exisMenu else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 menu.parentId = container.parentId
                 menu.name = container.name
@@ -253,7 +253,7 @@ extension SysRouteController {
                 menu.sort = container.sort
                 menu.icon = container.icon
                 menu.isShow = container.isShow
-                return try menu.update(on: request).makeJsonResponse(on: request)
+                return try menu.update(on: request).makeJson(on: request)
             }
     }
 
@@ -263,11 +263,11 @@ extension SysRouteController {
             .find(container.id, on: request)
             .flatMap { menu in
                 guard let tmenu = menu else {
-                    return try request.makeErrorJson(message: "不存在")
+                    return try request.makeJson(error: "不存在")
                 }
                 return try tmenu
                     .delete(on: request)
-                    .makeVoidJson(request: request)
+                    .makeJson(request: request)
         }
     }
 
@@ -280,11 +280,11 @@ extension SysRouteController {
             .first()
             .flatMap { exisMenu in
                 guard exisMenu == nil else {
-                    return try request.makeErrorJson(message: "Menu 已经存在")
+                    return try request.makeJson(error: "Menu 已经存在")
                 }
                 menu.id = nil;
                 // menu&role
-                return try menu.create(on: request).makeJsonResponse(on: request)
+                return try menu.create(on: request).makeJson(on: request)
             }
     }
 
@@ -295,7 +295,7 @@ extension SysRouteController {
             .all()
             .map{ menus in
                 return self.generateModelTree(parentId: 0, originArray: menus)
-            }.makeJsonResponse(on: request)
+            }.makeJson(on: request)
     }
 }
 
