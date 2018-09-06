@@ -40,10 +40,8 @@ private extension UserRouteController {
             .filter(\ActiveCode.userId == filters.userId)
             .filter(\ActiveCode.code == filters.code)
             .first()
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { code in
-                guard let code = code else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(message: "不存在"))
-                }
                 code.state = true
                 return try code
                     .save(on: request)
@@ -60,10 +58,8 @@ private extension UserRouteController {
             .filter(\.identityType == UserAuth.AuthType.email.rawValue)
             .filter(\.identifier == container.email)
             .first()
-            .flatMap { uAuth in
-                guard let existAuth = uAuth else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(status: .emailNotExist))
-                }
+            .unwrap(or: ApiError(code: .modelNotExist))
+            .flatMap { existAuth in
                 let codeStr: String = String.random(length: 4)
                 let activeCode = ActiveCode(userId: existAuth.userId, code: codeStr, type: .changePwd)
                 return try activeCode
@@ -82,13 +78,11 @@ private extension UserRouteController {
             .filter(\UserAuth.identityType == UserAuth.AuthType.email.rawValue)
             .filter(\UserAuth.identifier == container.email)
             .first()
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { existingAuth in
-                guard let existingAuth = existingAuth else {
-                    return try request.makeJson(response: JSONContainer<Empty>.error(status: .userNotExist))
-                }
                 let digest = try request.make(BCryptDigest.self)
                 guard try digest.verify(container.password, created: existingAuth.credential) else {
-                    return try request.makeJson(error: "认证失败")
+                    throw ApiError(code: .authFail)
                 }
                 return try self.authService.authenticationContainer(for: existingAuth.userId, on: request)
             }
@@ -102,19 +96,14 @@ private extension UserRouteController {
             .filter(\UserAuth.identityType == UserAuth.AuthType.email.rawValue)
             .filter(\UserAuth.identifier == container.email)
             .first()
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap{ userAuth in
-                guard let userAuth = userAuth else {
-                    return try request.makeJson(error: "No user found with email '\(container.email)'.")
-                }
-
                 return userAuth
                     .user
                     .query(on: request)
                     .first()
+                    .unwrap(or: ApiError(code: .modelNotExist))
                     .flatMap { user in
-                        guard let user = user else {
-                            return try request.makeJson(error: "No user found with email '\(container.email)'.")
-                        }
                         return try user
                             .codes
                             .query(on: request)
@@ -124,7 +113,7 @@ private extension UserRouteController {
                             .flatMap { code in
                                 // 只有激活的用户才可以修改密码
                                 guard let code = code, code.state else {
-                                    return try request.makeJson(error: "验证码错误")
+                                    throw ApiError(code: .codeFail)
                                 }
                                 var tmpUserAuth = userAuth
                                 tmpUserAuth.credential = container.password
@@ -147,7 +136,7 @@ private extension UserRouteController {
             .first()
             .flatMap{ existAuth in
                 guard existAuth == nil else {
-                    return try request.makeJson(error: "This email is already registered.")
+                    throw ApiError(code: .modelExisted)
                 }
                 var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
                 try userAuth.validate()

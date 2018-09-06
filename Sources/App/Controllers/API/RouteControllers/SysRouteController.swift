@@ -60,10 +60,8 @@ extension SysRouteController {
             .query(on: request)
             .filter(\.id == container.id)
             .first()
-            .flatMap { exisRight in
-                guard let right = exisRight else {
-                    return try request.makeJson(error: "不存在")
-                }
+            .unwrap(or: ApiError(code: .modelNotExist))
+            .flatMap { right in
                 right.parentId = container.parentId
                 right.name = container.name
                 right.remarks = container.remarks
@@ -81,7 +79,7 @@ extension SysRouteController {
             .first()
             .flatMap { exisRole in
                 guard exisRole == nil else {
-                    return try request.makeJson(error: "Menu 已经存在")
+                    throw ApiError(code: .modelExisted)
                 }
                 container.id = nil
                 return try container.create(on: request).makeJson(on: request)
@@ -92,11 +90,9 @@ extension SysRouteController {
         let _ = try request.requireAuthenticated(User.self)
         return Right
             .find(container.id, on: request)
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { user in
-                guard let tuser = user else {
-                    return try request.makeJson(error: "不存在")
-                }
-                return try tuser
+                return try user
                     .delete(on: request)
                     .makeJson(request: request)
         }
@@ -124,7 +120,7 @@ extension SysRouteController {
             .first()
             .flatMap{ existAuth in
                 guard existAuth == nil else {
-                    return try request.makeJson(error: "This email is already registered.")
+                    throw ApiError(code: .modelExisted)
                 }
 
                 var userAuth = UserAuth(userId: nil, identityType: .email, identifier: container.email, credential: container.password)
@@ -162,11 +158,9 @@ extension SysRouteController {
         let _ = try request.requireAuthenticated(User.self)
         return User
             .find(container.id, on: request)
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { user in
-                guard let tuser = user else {
-                    return try request.makeJson(error: "不存在")
-                }
-                return try tuser
+                return try user
                     .delete(on: request)
                     .makeJson(request: request)
         }
@@ -181,10 +175,8 @@ extension SysRouteController {
             .query(on: request)
             .filter(\.id == container.id)
             .first()
-            .flatMap { exisRole in
-                guard let role = exisRole else {
-                    return try request.makeJson(error: "不存在")
-                }
+            .unwrap(or: ApiError(code: .modelNotExist))
+            .flatMap { role in
                 role.parentId = container.parentId
                 role.name = container.name
                 role.sort = container.sort
@@ -201,7 +193,7 @@ extension SysRouteController {
             .first()
             .flatMap { exisRole in
                 guard exisRole == nil else {
-                    return try request.makeJson(error: "Menu 已经存在")
+                    throw ApiError(code: .modelExisted)
                 }
                 role.id = nil
                 return try role.create(on: request).makeJson(on: request)
@@ -212,11 +204,9 @@ extension SysRouteController {
         let _ = try request.requireAuthenticated(User.self)
         return Role
             .find(container.id, on: request)
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { role in
-                guard let trole = role else {
-                    return try request.makeJson(error: "不存在")
-                }
-                return try trole
+                return try role
                     .delete(on: request)
                     .makeJson(request: request)
         }
@@ -243,10 +233,8 @@ extension SysRouteController {
             .query(on: request)
             .filter(\.id == container.id)
             .first()
-            .flatMap { exisMenu in
-                guard let menu = exisMenu else {
-                    return try request.makeJson(error: "不存在")
-                }
+            .unwrap(or: ApiError(code: .modelNotExist))
+            .flatMap { menu in
                 menu.parentId = container.parentId
                 menu.name = container.name
                 menu.href = container.href
@@ -261,11 +249,9 @@ extension SysRouteController {
         let _ = try request.requireAuthenticated(User.self)
         return Menu
             .find(container.id, on: request)
+            .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { menu in
-                guard let tmenu = menu else {
-                    return try request.makeJson(error: "不存在")
-                }
-                return try tmenu
+                return try menu
                     .delete(on: request)
                     .makeJson(request: request)
         }
@@ -280,7 +266,7 @@ extension SysRouteController {
             .first()
             .flatMap { exisMenu in
                 guard exisMenu == nil else {
-                    return try request.makeJson(error: "Menu 已经存在")
+                    throw ApiError(code: .modelExisted)
                 }
                 menu.id = nil;
                 // menu&role

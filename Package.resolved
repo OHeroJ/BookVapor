@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "APIErrorMiddleware",
-        "repositoryURL": "https://github.com/skelpo/APIErrorMiddleware.git",
-        "state": {
-          "branch": null,
-          "revision": "c8cd6bd0a26cd000c8625e839312e3ad77ccdc3b",
-          "version": "0.3.5"
-        }
-      },
-      {
         "package": "Auth",
         "repositoryURL": "https://github.com/vapor/auth.git",
         "state": {
@@ -33,8 +24,8 @@
         "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
         "state": {
           "branch": null,
-          "revision": "15ff39f95e0b56058cf050c910c1e26002d01f71",
-          "version": "1.0.15"
+          "revision": "ce36f72f2c36b88f847de50c8c0ed8021ff80097",
+          "version": "1.0.16"
         }
       },
       {
@@ -42,8 +33,8 @@
         "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
         "state": {
           "branch": null,
-          "revision": "e29d5112fb5958327f537a6420d292922f3587dc",
-          "version": "1.0.15"
+          "revision": "a8e24ec6db452ed202502ebae885b39f43e34d98",
+          "version": "1.0.16"
         }
       },
       {
@@ -69,8 +60,8 @@
         "repositoryURL": "https://github.com/vapor/core.git",
         "state": {
           "branch": null,
-          "revision": "7f56a09995bf3c8df562be456bdcda405d9d0678",
-          "version": "3.4.1"
+          "revision": "ad776ec35f0a811672128eaf796fb3de10a46d3f",
+          "version": "3.4.2"
         }
       },
       {
@@ -87,8 +78,8 @@
         "repositoryURL": "https://github.com/vapor/database-kit.git",
         "state": {
           "branch": null,
-          "revision": "7a01659316b9f033fa2150d5cd5e9d3c3e46c2e3",
-          "version": "1.3.0"
+          "revision": "3a17dbbe9be5f8c37703e4b7982c1332ad6b00c4",
+          "version": "1.3.1"
         }
       },
       {
@@ -123,8 +114,8 @@
         "repositoryURL": "https://github.com/vapor/http.git",
         "state": {
           "branch": null,
-          "revision": "a192ee144ab53370b2c095c003f429746df85595",
-          "version": "3.1.0"
+          "revision": "f3641659867edfa7db1a939d1e38ece7f3766e25",
+          "version": "3.1.2"
         }
       },
       {
@@ -150,8 +141,8 @@
         "repositoryURL": "https://github.com/vapor-community/pagination.git",
         "state": {
           "branch": null,
-          "revision": "91658b8ff9300a196190faaa300b33c5e975783c",
-          "version": "1.0.6"
+          "revision": "d018e2a02ed94536ad494ff750057990e8ae1acf",
+          "version": "1.0.7"
         }
       },
       {
@@ -204,8 +195,8 @@
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {
           "branch": null,
-          "revision": "cf08e673dc41dc63d34065234c8fc432e8d334c4",
-          "version": "1.9.2"
+          "revision": "f42c836ba58e3e38688acdb75df986dff02717f1",
+          "version": "1.9.4"
         }
       },
       {

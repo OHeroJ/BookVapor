@@ -37,13 +37,10 @@ extension BookRouteController {
         let _ = try request.requireAuthenticated(User.self)
         return Book
             .find(container.id, on: request)
+            .unwrap(or: ApiError(code: .bookNotExist))
             .flatMap { book in
-                guard let existBook = book else {
-                    return try request.makeJson(error: "书籍不存在")
-
-                }
-                existBook.state = container.state
-                return try existBook.update(on: request).makeJson(on: request)
+                book.state = container.state
+                return try book.update(on: request).makeJson(on: request)
         }
     }
 
@@ -64,7 +61,7 @@ extension BookRouteController {
     func commentBookHandle(_ request: Request, container: Comment) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
         guard let userId = user.id , userId == container.userId else {
-            return try request.makeJson(error: "用户不存在")
+            throw ApiError(code: .userNotExist)
         }
         let comment = Comment(bookId: container.bookId, userId: userId, content: container.content)
         // TODO: 推送 + 消息
@@ -95,29 +92,21 @@ extension BookRouteController {
     /// 书籍的编辑， 只有是用户的书籍才能编辑
     func updateBookHandler(_ request: Request, container: BookUpdateContainer) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
-        guard let userId = user.id,
-            userId == container.id else {
-            return try request.makeJson(error: "这本书不是您的，不能编辑")
-        }
         return Book
             .find(container.id, on: request)
+            .unwrap(or: ApiError(code: .bookNotExist))
             .flatMap { book in
-                guard let tBook = book else {
-                    return try request.makeJson(error: "书籍不存在")
-                }
-                tBook.covers = container.convers ?? tBook.covers
-                tBook.detail = container.detail ?? tBook.detail
-                tBook.price = container.price ?? tBook.price
-                return try tBook.update(on: request).makeJson(on: request)
+                book.covers = container.convers ?? book.covers
+                book.detail = container.detail ?? book.detail
+                book.price = container.price ?? book.price
+                return try book.update(on: request).makeJson(on: request)
         }
     }
 
     /// 创建书籍
     func createBookHandler(_ request: Request, container: BookCreateContainer) throws -> Future<Response> {
         let user = try request.requireAuthenticated(User.self)
-        guard let userId = user.id else {
-            return try request.makeJson(error: "认证失败")
-        }
+        let userId = try user.requireID()
         let book = Book(isbn: container.isbn,
                         name: container.name,
                         author: container.author,

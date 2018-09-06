@@ -75,14 +75,42 @@ extension Sequence where Iterator.Element: EitherProtocol {
     }
 }
 
+extension Either: Codable where T: Codable, U: Codable {
+    enum CodingKeys: CodingKey {
+        case left
+        case right
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .left(let value):
+            try container.encode(value, forKey: .left)
+        case .right(let value):
+            try container.encode(value, forKey: .right)
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        do {
+            let leftValue = try container.decode(T.self, forKey: .left)
+            self = .left(leftValue)
+        } catch {
+            let rightValue = try container.decode(U.self, forKey: .right)
+            self = .right(rightValue)
+        }
+    }
+
+}
+
+
 
 precedencegroup Bind {
     associativity: left
     higherThan: DefaultPrecedence
 }
-
 infix operator >>- : Bind
-
 func >>- <T, U, V> (either: Either<T, U>, transform: (U) -> Either<T, V>) -> Either<T, V> {
     return either.flatMap(transform)
 }

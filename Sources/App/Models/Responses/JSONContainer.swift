@@ -7,7 +7,7 @@
 
 import Vapor
 
-enum ResponseStatus: Int, Content {
+enum ResponseStatus: UInt, Content {
     case ok = 0
     case error = 1
     case missesPara = 3
@@ -18,6 +18,12 @@ enum ResponseStatus: Int, Content {
     case userNotExist = 21
     case passwordError = 22
     case emailNotExist = 23
+    case bookNotExist = 24
+    case modelNotExist = 25
+    case modelExisted = 26
+    case authFail = 27
+    case codeFail = 28
+    case resonNotExist = 29
 
     var desc: String {
         switch self {
@@ -39,6 +45,18 @@ enum ResponseStatus: Int, Content {
             return "密码错误"
         case .emailNotExist:
             return "邮箱不存在"
+        case .bookNotExist:
+            return "书籍不存在"
+        case .modelNotExist:
+            return "对象不存在"
+        case .modelExisted:
+            return "对象已存在"
+        case .authFail:
+            return "认证失败"
+        case .codeFail:
+            return "验证码错误"
+        case .resonNotExist:
+            return "不存在reason"
         }
     }
 }
@@ -54,9 +72,9 @@ struct JSONContainer<D: Content>: Content {
         return JSONContainer<Empty>()
     }
 
-    init(status:ResponseStatus = .ok, message: String = ResponseStatus.ok.desc, data:D? = nil) {
-        self.status = status
-        self.message = message
+    init(data:D? = nil) {
+        self.status = .ok
+        self.message = self.status.desc
         self.data = data
     }
 
@@ -68,14 +86,6 @@ struct JSONContainer<D: Content>: Content {
 
     static func success(data: D) -> JSONContainer<D> {
         return JSONContainer(data:data)
-    }
-
-    static func error(message: String) -> JSONContainer<Empty> {
-        return JSONContainer<Empty>(status: .error, message: message, data: nil)
-    }
-
-    static func error(status: ResponseStatus) -> JSONContainer<Empty> {
-        return JSONContainer<Empty>(status: status, message: status.desc, data:nil)
     }
 }
 
@@ -105,30 +115,8 @@ extension Request {
         return try response.encode(for: self)
     }
 
-    /// error json
-    func makeJson(error message: String) throws -> Future<Response> {
-        return try JSONContainer<Empty>.error(message: message).encode(for: self)
-    }
-
     /// Void json
     func makeJson() throws -> Future<Response> {
         return try JSONContainer<Empty>(data: nil).encode(for: self)
     }
 }
-
-
-
-extension Either where T: Content, U: Content {
-    func makeJson(on request: Request) throws -> Future<Response> {
-        switch self {
-        case let .left(x):
-            return try JSONContainer<Left>(data: x).encode(for: request)
-        case let .right(x):
-            return try JSONContainer<Right>(data: x).encode(for: request)
-        }
-    }
-}
-
-
-
-

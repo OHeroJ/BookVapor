@@ -33,9 +33,7 @@ final class NotifyService {
         return notify
             .create(on: reqeust)
             .flatMap { (noti) in
-                guard let notid = noti.id else {
-                    return try reqeust.makeJson(error: "noti id 不存在")
-                }
+                let notid = try noti.requireID()
                 let userNotify = UserNotify(userId: sender, notifyId: notid, notifyType: noti.type)
                 let _ = userNotify.create(on: reqeust)
                 return try reqeust.makeJson(response: JSONContainer<Notify>.success(data: noti))
@@ -121,7 +119,7 @@ final class NotifyService {
             "create_topic": ["like", "comment"],
             "like_replay": ["comment"]
         ]
-        guard let actions = reasonAction[reason] else {return try reqeust.makeJson(error: "不存在reason")}
+        guard let actions = reasonAction[reason] else {throw ApiError(code: .resonNotExist)}
         actions.forEach { action in
             let subscribe = Subscription(target: target, targetType: targetType, userId: user, action: action)
             let _ = subscribe.create(on: reqeust).map(to: Void.self, { _ in return})
