@@ -8,12 +8,9 @@
 import Vapor
 
 enum ResponseStatus: UInt, Content {
-    case ok = 0
-    case error = 1
-    case missesPara = 3
-    case token = 4
-    case unknown = 10
+    case ok = 0  // 请求成功状态
 
+    /// 接口失败
     case userExist = 20
     case userNotExist = 21
     case passwordError = 22
@@ -29,14 +26,6 @@ enum ResponseStatus: UInt, Content {
         switch self {
         case .ok:
             return "请求成功"
-        case .error:
-            return "请求失败"
-        case .missesPara:
-            return "缺少参数"
-        case .token:
-            return "Token 已经失效"
-        case .unknown:
-            return "未知错误"
         case .userExist:
             return "用户已经存在"
         case .userNotExist:
@@ -110,9 +99,8 @@ extension Future where T == Either<Content, Content> {
 }
 
 extension Request {
-    /// data json
-    func makeJson<C>(response: JSONContainer<C>) throws -> Future<Response> {
-        return try response.encode(for: self)
+    func makeJson<T: Content>(_ content: T) throws -> Future<Response> {
+        return try JSONContainer<T>(data: content).encode(for: self)
     }
 
     /// Void json

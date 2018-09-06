@@ -35,7 +35,7 @@ extension AccountRouteController {
     func getAcccountInfo(_ request: Request) throws -> Future<Response> {
         let user = try request
             .requireAuthenticated(User.self)
-        return try JSONContainer.init(data: user).encode(for: request)
+        return try request.makeJson(user)
     }
 }
 

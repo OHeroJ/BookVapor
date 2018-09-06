@@ -31,14 +31,14 @@ private extension ProtectedRoutesController {
     func basicAuthRouteHandler(_ request: Request) throws -> Future<Response> {
         let user =  try request
             .requireAuthenticated(User.self)
-        return try request.makeJson(response: JSONContainer(data: user))
+        return try request.makeJson(user)
     }
 
     /// 用 token 获取用户信息
     func tokenAuthRouteHandler(_ request: Request) throws -> Future<Response> {
         let user =  try request
             .requireAuthenticated(User.self)
-        return try request.makeJson(response: JSONContainer(data: user))
+        return try request.makeJson(user)
     }
 }
 

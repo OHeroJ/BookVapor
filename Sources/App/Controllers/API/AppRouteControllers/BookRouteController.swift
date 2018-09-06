@@ -52,9 +52,8 @@ extension BookRouteController {
             .query(on: request)
             .filter(\.bookId == container.bookId)
             .paginate(for: request)
-            .flatMap{ pages in
-                return try JSONContainer.init(data: pages).encode(for: request)
-            }
+            .map {$0.response()}
+            .makeJson(on: request)
     }
 
     /// 创建评论
@@ -91,7 +90,7 @@ extension BookRouteController {
 
     /// 书籍的编辑， 只有是用户的书籍才能编辑
     func updateBookHandler(_ request: Request, container: BookUpdateContainer) throws -> Future<Response> {
-        let user = try request.requireAuthenticated(User.self)
+        let _ = try request.requireAuthenticated(User.self)
         return Book
             .find(container.id, on: request)
             .unwrap(or: ApiError(code: .bookNotExist))

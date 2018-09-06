@@ -29,9 +29,7 @@ final class AuthenticationService {
                            self.accessToken(for: userId, on: connection),
                            self.refreshToken(for: userId, on: connection)) { access, refresh in
                 return AuthenticationContainer(accessToken: access, refreshToken: refresh)
-                }.flatMap { (author)  in
-                    return try JSONContainer.init(data: author).encode(for: connection)
-                }
+                }.makeJson(on: connection)
         }
     }
 

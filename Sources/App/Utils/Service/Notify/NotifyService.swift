@@ -36,7 +36,7 @@ final class NotifyService {
                 let notid = try noti.requireID()
                 let userNotify = UserNotify(userId: sender, notifyId: notid, notifyType: noti.type)
                 let _ = userNotify.create(on: reqeust)
-                return try reqeust.makeJson(response: JSONContainer<Notify>.success(data: noti))
+                return try reqeust.makeJson(noti)
             }
     }
 
@@ -67,7 +67,7 @@ final class NotifyService {
                             let userNoti = UserNotify(userId: userId, notifyId: notiyId, notifyType: notify.type)
                             _ = userNoti.create(on: request)
                         })
-                        return try request.makeJson(response: JSONContainer<[Notify]>.init(data: noties))
+                        return try request.makeJson(noties)
                     }
         }
 
@@ -107,7 +107,7 @@ final class NotifyService {
                         return try request.makeJson()
                     }
                 })
-                return try request.makeJson(response: JSONContainer<[Notify]>.init(data: notifyArr))
+                return try request.makeJson(notifyArr)
             }
     }
 
@@ -143,7 +143,6 @@ final class NotifyService {
             .filter(\.userId == userId)
             .all()
             .makeJson(on: reqeust)
-
     }
 
     /// 获取用户的消息列表
@@ -153,6 +152,7 @@ final class NotifyService {
             .filter(\UserNotify.userId == userId)
             .sort(\UserNotify.createdAt)
             .paginate(for: reqeust)
+            .map {$0.response()}
             .makeJson(on: reqeust)
     }
 

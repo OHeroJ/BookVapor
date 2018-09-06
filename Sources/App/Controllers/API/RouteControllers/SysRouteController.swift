@@ -103,9 +103,8 @@ extension SysRouteController {
         return try Right
             .query(on: request)
             .paginate(for: request)
-            .flatMap{ pages in
-                return try JSONContainer(data: pages).encode(for: request)
-        }
+            .map {$0.response()}
+            .makeJson(on: request)
     }
 
 }
@@ -149,9 +148,8 @@ extension SysRouteController {
         return try User
             .query(on: request)
             .paginate(for: request)
-            .flatMap{ pages in
-                return try JSONContainer(data: pages).encode(for: request)
-            }
+            .map {$0.response()}
+            .makeJson(on: request)
     }
 
     func deleteUser(_ request: Request, container: DeleteIDContainer<User>) throws -> Future<Response> {
