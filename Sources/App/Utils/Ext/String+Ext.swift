@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Random
 
 extension String {
     static func random(length: Int = 20) -> String {
@@ -13,12 +14,7 @@ extension String {
         var randomString: String = ""
         for _ in 0..<length {
             let count = base.count
-            #if os(Linux)
-            srandom(UInt32(time(nil)))
-            let randomValue = UInt32(random() % count)
-            #else
-            let randomValue = arc4random_uniform(UInt32(count))
-            #endif
+            let randomValue = OSRandom().generate(UInt32.self) % UInt32(count)
             randomString += "\(base[base.index(base.startIndex, offsetBy: Int(randomValue))])"
         }
         return randomString
