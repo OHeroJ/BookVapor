@@ -13,7 +13,8 @@ extension String {
         var randomString: String = ""
         for _ in 0..<length {
             #if os(Linux)
-            let randomValue = Int(random() % base.count)
+            srandom(UInt32(time(nil)))
+            let randomValue = UInt32(random() % base.count)
             #else
             let randomValue = arc4random_uniform(UInt32(base.count))
             #endif
