@@ -12,11 +12,12 @@ extension String {
         let base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         var randomString: String = ""
         for _ in 0..<length {
+            let count = base.count
             #if os(Linux)
             srandom(UInt32(time(nil)))
-            let randomValue = UInt32(random() % base.count)
+            let randomValue = UInt32(random() % count)
             #else
-            let randomValue = arc4random_uniform(UInt32(base.count))
+            let randomValue = arc4random_uniform(UInt32(count))
             #endif
             randomString += "\(base[base.index(base.startIndex, offsetBy: Int(randomValue))])"
         }
