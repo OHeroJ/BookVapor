@@ -60,7 +60,7 @@ private extension UserRouteController {
             .first()
             .unwrap(or: ApiError(code: .modelNotExist))
             .flatMap { existAuth in
-                let codeStr: String = String.random(length: 4)
+                let codeStr: String = try String.random(length: 4)
                 let activeCode = ActiveCode(userId: existAuth.userId, code: codeStr, type: .changePwd)
                 return try activeCode
                     .create(on: request)
