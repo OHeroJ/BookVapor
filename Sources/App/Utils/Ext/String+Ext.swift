@@ -11,10 +11,9 @@ extension String {
     static func random(length: Int = 20) -> String {
         let base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         var randomString: String = ""
-
         for _ in 0..<length {
             #if os(Linux)
-            let randomValue = Int(random() % UInt32(base.count))
+            let randomValue = Int(random() % base.count)
             #else
             let randomValue = arc4random_uniform(UInt32(base.count))
             #endif
