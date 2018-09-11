@@ -30,8 +30,6 @@ final class UserRouteController: RouteCollection {
         // 微信小程序
         // /oauth/token 通过小程序提供的验证信息获取服务器自己的 token
         group.post(UserWxAppOauthContainer.self, at: "/oauth/token", use: wxappOauthToken)
-
-        // /accounts/wxapp 如果登录用户是未注册用户，使用此接口注册为新用户
     }
 }
 
@@ -43,7 +41,7 @@ private extension UserRouteController {
 
         let appId = "wx295f34d030798e48"
         let secret = "39a549d066a34c56c8f1d34d606e3a95"
-        let url = "https:api.weixin.qq.com/sns/jscode2session?appid=\(appId)&secret=\(secret)&js_code=\(container.code)&grant_type=authorization_code"
+        let url = "https://api.weixin.qq.com/sns/jscode2session?appid=\(appId)&secret=\(secret)&js_code=\(container.code)&grant_type=authorization_code"
         return try request
             .make(Client.self)
             .get(url)
