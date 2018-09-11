@@ -63,7 +63,40 @@ private extension UserRouteController {
             let data = try JSONDecoder().decode(WxAppUserInfoContainer.self, from: decrypted)
 
             if data.watermark.appid == appId {
-                return try request.makeJson()
+                /// 通过 resContainer.session_key 和 data.openid
+                ///
+                return UserAuth
+                    .query(on: request)
+                    .filter(\.identityType == UserAuth.AuthType.wxapp.rawValue)
+                    .filter(\.identifier == data.openId)
+                    .first()
+                    .flatMap { userauth in
+                        if let userAuth = userauth { // 该用户已授权过， 更新
+                            var userAu = userAuth
+                            let digest = try request.make(BCryptDigest.self)
+                            userAu.credential = try digest.hash(resContainer.session_key)
+                            return userAu
+                                .update(on: request)
+                                .flatMap { _ in
+                                return try self.authService.authenticationContainer(for: userAuth.userId, on: request)
+                            }
+                        } else { // 注册
+                            var userAuth = UserAuth(userId: nil, identityType: .wxapp, identifier: data.openId, credential: resContainer.session_key)
+                            let newUser = User(name: data.nickName,
+                                               avator: data.avatarUrl)
+                            return newUser
+                                .create(on: request)
+                                .flatMap { user in
+                                    userAuth.userId = try user.requireID()
+                                    return try userAuth
+                                        .userAuth(with: request.make(BCryptDigest.self))
+                                        .create(on: request)
+                                        .flatMap { _ in
+                                            return try self.authService.authenticationContainer(for: user.requireID(), on: request)
+                                    }
+                            }
+                        }
+                }
             } else {
                 throw ApiError(code: .custom)
             }
