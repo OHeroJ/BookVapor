@@ -21,6 +21,8 @@ enum ResponseStatus: UInt, Content {
     case authFail = 27
     case codeFail = 28
     case resonNotExist = 29
+    case base64DecodeError = 30
+    case custom = 31
 
     var desc: String {
         switch self {
@@ -46,6 +48,10 @@ enum ResponseStatus: UInt, Content {
             return "验证码错误"
         case .resonNotExist:
             return "不存在reason"
+        case .base64DecodeError:
+            return "base64 decode 失败"
+        case .custom:
+            return "出错了"
         }
     }
 }

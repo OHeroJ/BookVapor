@@ -8,6 +8,7 @@
 import Vapor
 import Crypto
 import FluentPostgreSQL
+import CNIOOpenSSL
 
 final class UserRouteController: RouteCollection {
     private let authService = AuthenticationService()
@@ -25,11 +26,50 @@ final class UserRouteController: RouteCollection {
 
         /// 激活校验码
         group.get("activate", use: activeRegisteEmailCode)
+
+        // 微信小程序
+        // /oauth/token 通过小程序提供的验证信息获取服务器自己的 token
+        group.post(UserWxAppOauthContainer.self, at: "/oauth/token", use: wxappOauthToken)
+
+        // /accounts/wxapp 如果登录用户是未注册用户，使用此接口注册为新用户
     }
 }
 
 //MARK: Helper
 private extension UserRouteController {
+    /// 小程序调用wx.login() 获取 临时登录凭证code ，并回传到开发者服务器。
+    // 开发者服务器以code换取用户唯一标识openid 和 会话密钥session_key。
+    func wxappOauthToken(_ request: Request, container: UserWxAppOauthContainer) throws -> Future<Response> {
+
+        let appId = "wx295f34d030798e48"
+        let secret = "39a549d066a34c56c8f1d34d606e3a95"
+        let url = "https:api.weixin.qq.com/sns/jscode2session?appid=\(appId)&secret=\(secret)&js_code=\(container.code)&grant_type=authorization_code"
+        return try request
+            .make(Client.self)
+            .get(url)
+            .flatMap { response in
+            guard let res = response.http.body.data else {
+                throw ApiError(code:.custom)
+            }
+            let resContainer = try JSONDecoder().decode(WxAppCodeResContainer.self,from: res)
+            let sessionKey = try resContainer.session_key.base64decode()
+            let encryptedData = try container.encryptedData.base64decode()
+            let iv = try container.iv.base64decode()
+
+            let cipherAlgorithm = CipherAlgorithm(c: EVP_aes_128_cbc())
+            let shiper = Cipher(algorithm: cipherAlgorithm)
+
+            let decrypted = try shiper.decrypt(encryptedData, key: sessionKey, iv: iv)
+            let data = try JSONDecoder().decode(WxAppUserInfoContainer.self, from: decrypted)
+
+            if data.watermark.appid == appId {
+                return try request.makeJson()
+            } else {
+                throw ApiError(code: .custom)
+            }
+        }
+    }
+
     // 激活注册校验码
     func activeRegisteEmailCode(_ request: Request) throws -> Future<Response> {
         // 获取到参数

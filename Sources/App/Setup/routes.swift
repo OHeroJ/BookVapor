@@ -19,6 +19,13 @@ public func routes(_ router: Router) throws {
             .firstValue(name: HTTPHeaderName.host) ?? ""
     }
 
+    do {
+    let aa = try "c2RmanNvb2pvc2Rmam9qbw==".base64decode()
+    print(aa)
+    } catch {
+        print("error")
+    }
+
     func handleTestPost(_ request: Request) throws -> Future<User> {
         return try request.content.decode(User.self)
     }

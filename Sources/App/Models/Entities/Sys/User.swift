@@ -15,7 +15,7 @@ final class User: Content {
     var id: Int?
     var organizId: Organization.ID  // 公司
     var name: String
-    var email: String
+    var email: String?
     var avator: String?
     var info: String? // 简介
 
@@ -32,7 +32,7 @@ final class User: Content {
 
     init(name: String,
          phone: String? = nil,
-         email: String,
+         email: String? = nil,
          avator: String? = nil,
          organizId: Organization.ID? = nil,
          info: String? = nil) {

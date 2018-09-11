@@ -19,5 +19,12 @@ extension String {
         }
         return randomString
     }
+
+    func base64decode() throws -> Data {
+        guard let data = Data(base64Encoded: self) else {
+            throw ApiError(code: .base64DecodeError)
+        }
+        return data
+    }
 }
 

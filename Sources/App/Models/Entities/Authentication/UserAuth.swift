@@ -37,6 +37,7 @@ struct UserAuth: Content {
 extension UserAuth {
     enum AuthType: String {
         case email = "email"
+        case wxapp = "wxapp" // 微信小程序
 
         static func type(_ val: String) -> AuthType {
             return AuthType(rawValue: val) ?? .email

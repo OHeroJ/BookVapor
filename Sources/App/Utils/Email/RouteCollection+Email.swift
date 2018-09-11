@@ -17,7 +17,10 @@ extension RouteCollection {
             .flatMap{ code  in
                 let scheme =  request.http.headers.firstValue(name: .host) ?? ""
                 let linkUrl = "https://\(scheme)/api/users/activate?userId=\(userId)&code=\(code.code)"
-                let emailContent = EmailSender.Content.accountActive(emailTo: user.email, url: linkUrl)
+                guard let email = user.email else {
+                    throw ApiError(code: .emailNotExist)
+                }
+                let emailContent = EmailSender.Content.accountActive(emailTo: email, url: linkUrl)
                 return try self.sendMail(request: request, content: emailContent)
         }
     }
