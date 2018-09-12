@@ -52,11 +52,10 @@ private extension AuthenticationService {
     func existingUser(matchingTokenString tokenString: RefreshToken.Token, on connection: DatabaseConnectable) throws -> Future<User?> {
         return RefreshToken
             .query(on: connection)
-            .filter(\.token == tokenString)
+            .filter(\RefreshToken.token == tokenString)
             .first()
+            .unwrap(or: ApiError(code: .refreshTokenNotExist))
             .flatMap { token in
-
-            guard let token = token else { throw Abort(.notFound /* token not found */) }
             return User
                 .query(on: connection)
                 .filter(\.id == token.userId)
@@ -73,7 +72,7 @@ private extension AuthenticationService {
 
     //MARK: Cleanup
     func removeAllTokens(for userId: User.ID?, on connection: DatabaseConnectable) throws -> Future<Void> {
-        guard let userId = userId else { throw Abort(.notFound) }
+        guard let userId = userId else { throw ApiError(code: .userNotExist) }
 
         let accessTokens = AccessToken
             .query(on: connection)
