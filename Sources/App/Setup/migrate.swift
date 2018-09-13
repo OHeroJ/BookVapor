@@ -43,4 +43,5 @@ public func migrate(migrations: inout MigrationConfig) throws {
     migrations.add(migration: PopulateOrganizationForms.self, database: .psql)
     migrations.add(migration: PopulateMenuForms.self, database: .psql)
     migrations.add(migration: PopulateBookClassifyForms.self, database: .psql)
+    migrations.add(migration: PopulatePriceUnitForms.self, database: .psql)
 }
