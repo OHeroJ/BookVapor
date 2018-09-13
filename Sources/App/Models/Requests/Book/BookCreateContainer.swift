@@ -14,8 +14,8 @@ struct BookCreateContainer: Content {
     var price: Double
     var detail: String
     var convers: [String]
-    var doubanPrice: Double
-    var doubanGrade: Double
+    var doubanPrice: Double // 豆瓣价格
+    var doubanGrade: Double // 豆瓣等级
     var classifyId: BookClassify.ID
     var priceUintId: PriceUnit.ID
 }
