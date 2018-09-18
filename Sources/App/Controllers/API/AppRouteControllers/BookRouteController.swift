@@ -26,10 +26,19 @@ final class BookRouteController: RouteCollection {
         /// 获取书本的评论
         group.get("comments", use: listCommentsHandle)
 
+        /// 获取豆瓣书籍信息?isbn=
+        group.get("douban", use: getDoubanInfo)
+
     }
 }
 
 extension BookRouteController {
+
+    func getDoubanInfo(_ request: Request) throws -> Future<Response> {
+        let isbn = try request.query.decode(BookIsbnContainer.self)
+        let url = "https://api.douban.com/v2/book/isbn/\(isbn.isbn)"
+        return try request.client().get(url)
+    }
 
     /// 书籍审核
     func checkBookHandle(_ request: Request, container: BookCheckContainer) throws -> Future<Response> {
