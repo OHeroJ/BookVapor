@@ -60,9 +60,9 @@ du -sh *  # 这里就可以进行看.build 文件的大小的变化
 
 ![](https://github.com/OHeroJ/BookCoin/blob/master/slide2.gif)
 
-1. 环境配置
+### 环境配置
 
-1.1 数据库配置
+#### 数据库配置
 
 ```
 brew install postgresql  # 安装 psql
@@ -70,7 +70,7 @@ createuser root -P lai12345  # 创建数据库用户
 createdb book -O root -E UTF8 -e # 创建数据库
 ``` 
 
-1.2 运行 vapor
+#### 运行 vapor
 
 ```
 brew install vapor/tap/vapor
@@ -78,7 +78,7 @@ vapor run
 ```
 
 
-2. 下载 demo 
+### 下载 demo 
 
 ```
 git clone https://github.com/OHeroJ/book.git
