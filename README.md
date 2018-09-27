@@ -5,8 +5,8 @@
 
 ## 环境
 
-* Vapor3
-* Swift4.1
+* Vapor3.1.0
+* Swift4.2
 
 ## 项目规范
 
@@ -62,20 +62,20 @@ du -sh *  # 这里就可以进行看.build 文件的大小的变化
 
 1. 环境配置
 
-    1.1 数据库配置
+1.1 数据库配置
 
-    ```
-    brew install postgresql  # 安装 psql
-    createuser root -P lai12345  # 创建数据库用户
-    createdb book -O root -E UTF8 -e # 创建数据库
-    ``` 
+```
+brew install postgresql  # 安装 psql
+createuser root -P lai12345  # 创建数据库用户
+createdb book -O root -E UTF8 -e # 创建数据库
+``` 
 
-    1.2 运行 vapor
+1.2 运行 vapor
 
-    ```
-    brew install vapor/tap/vapor
-    vapor run 
-    ```
+```
+brew install vapor/tap/vapor
+vapor run 
+```
 
 
 2. 下载 demo 

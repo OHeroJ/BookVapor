@@ -17,7 +17,7 @@ final class NewsRouteController: RouteCollection {
         let group = router.grouped("api", "news")
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
-        let tokenAuthGroup = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
+        let _ = group.grouped([tokenAuthMiddleware, guardAuthMiddleware])
 
 //        tokenAuthGroup.get("list", use: listNews)
 //        tokenAuthGroup.get("newer", use: hasNewerNews)
